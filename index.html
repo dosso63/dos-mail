@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +12,7 @@
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 <style>
 * {
@@ -23,114 +23,159 @@ body {
     margin: 0;
     min-height: 100vh;
     font-family: Arial, Helvetica, sans-serif;
-    background: #f5f3f8;
+    background: #f6f4f8;
     color: #222;
 }
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================
+   LOGIN
+========================= */
 
 #loginScreen {
     min-height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     padding: 20px;
 }
 
 .login-card {
     width: 100%;
     max-width: 460px;
-    padding: 36px;
-    background: white;
+    background: #fff;
     border-radius: 24px;
-    box-shadow: 0 15px 50px rgba(0,0,0,.10);
+    padding: 35px;
+    box-shadow: 0 15px 50px rgba(0,0,0,.1);
 }
 
-.logo {
+.login-logo {
     display: block;
     width: 100%;
     max-width: 330px;
-    margin: 0 auto 30px;
+    margin: 0 auto 28px;
 }
 
-h1 {
+.login-card h1 {
     text-align: center;
     margin: 0 0 10px;
-    font-size: 30px;
 }
 
-.description {
+.login-description {
     text-align: center;
-    color: #555;
+    color: #666;
     line-height: 1.5;
-    margin-bottom: 30px;
+    margin-bottom: 28px;
 }
+
+/* =========================
+   INPUTS
+========================= */
 
 .field {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .field label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 7px;
     font-weight: 700;
 }
 
 .field input,
+.field select,
 .field textarea {
     width: 100%;
-    padding: 14px;
-    border: 1px solid #d5d5d5;
-    border-radius: 12px;
+    border: 1px solid #d8d8d8;
+    border-radius: 11px;
+    padding: 13px 14px;
     font-size: 16px;
     outline: none;
+    background: #fff;
 }
 
 .field input:focus,
+.field select:focus,
 .field textarea:focus {
     border-color: #B69EDE;
     box-shadow: 0 0 0 3px rgba(182,158,222,.15);
 }
 
-.field textarea {
-    min-height: 110px;
-    resize: vertical;
-}
-
 .field small {
     display: block;
-    margin-top: 7px;
+    margin-top: 6px;
     color: #777;
 }
 
-.main-button {
-    width: 100%;
-    padding: 15px;
-    border: 0;
-    border-radius: 12px;
+.row {
+    display: flex;
+    gap: 14px;
+}
+
+.row .field {
+    flex: 1;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.primary-button {
+    border: none;
+    border-radius: 11px;
+    padding: 13px 18px;
     background: #B69EDE;
-    font-size: 17px;
-    font-weight: bold;
+    color: #222;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
 }
 
-.main-button:hover {
+.primary-button:hover {
     opacity: .9;
 }
 
-.main-button:disabled {
+.primary-button:disabled {
     opacity: .5;
     cursor: not-allowed;
 }
 
-#loginError {
-    display: none;
-    margin-top: 18px;
-    padding: 15px;
-    border-radius: 12px;
-    background: #ffe5e5;
-    color: #8a2020;
-    line-height: 1.5;
-    white-space: pre-line;
+.full-button {
+    width: 100%;
 }
+
+.secondary-button {
+    border: none;
+    border-radius: 9px;
+    padding: 9px 13px;
+    background: #DBF4FF;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.danger-button {
+    border: none;
+    border-radius: 9px;
+    padding: 9px 13px;
+    background: #ffe2e2;
+    color: #8a2020;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* =========================
+   HEADER
+========================= */
 
 #appScreen {
     display: none;
@@ -138,113 +183,298 @@ h1 {
 
 .header {
     background: #B69EDE;
-    padding: 22px;
+    padding: 20px 24px;
 }
 
 .header-inner {
-    max-width: 900px;
+    max-width: 1050px;
     margin: auto;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 20px;
 }
 
-.header h2 {
+.header h1 {
     margin: 0;
+    font-size: 24px;
 }
 
 .header p {
     margin: 5px 0 0;
+    font-size: 14px;
 }
 
-.account {
+.account-box {
     text-align: right;
+    font-size: 13px;
 }
 
-.logout {
-    margin-top: 8px;
-    padding: 8px 14px;
+.logout-button {
+    margin-top: 7px;
     border: 0;
     border-radius: 8px;
+    padding: 8px 13px;
     background: rgba(255,255,255,.7);
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
 }
 
-.container {
-    max-width: 760px;
-    margin: 35px auto;
-    padding: 32px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+/* =========================
+   LAYOUT
+========================= */
+
+.page {
+    max-width: 1050px;
+    margin: 30px auto;
+    padding: 0 15px 50px;
 }
 
-.container h2 {
-    margin-top: 0;
+.card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 7px 28px rgba(0,0,0,.06);
+    margin-bottom: 22px;
 }
 
-.row {
+.card h2 {
+    margin: 0 0 7px;
+}
+
+.card-subtitle {
+    margin: 0 0 22px;
+    color: #666;
+}
+
+/* =========================
+   CONTACT CONTROLS
+========================= */
+
+.contacts-toolbar {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.contacts-actions {
     display: flex;
-    gap: 15px;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 18px;
 }
 
-.row .field {
-    flex: 1;
+.contact-form {
+    background: #faf8fc;
+    border: 1px solid #eee8f5;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
 }
 
-#status {
-    display: none;
-    margin-top: 20px;
+.contact-form-title {
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+/* =========================
+   CONTACT LIST
+========================= */
+
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contact-item {
+    border: 1px solid #e7e7e7;
+    border-radius: 13px;
     padding: 14px;
+    display: grid;
+    grid-template-columns: 34px 1fr auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.contact-item:hover {
+    border-color: #B69EDE;
+}
+
+.contact-check {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.contact-name {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.contact-email {
+    font-size: 14px;
+    color: #555;
+}
+
+.contact-department {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: #f1ebfa;
+    font-size: 12px;
+}
+
+.contact-buttons {
+    display: flex;
+    gap: 7px;
+}
+
+.contact-buttons button {
+    padding: 7px 10px;
+    font-size: 13px;
+}
+
+.no-contacts {
+    padding: 25px;
+    text-align: center;
+    color: #777;
+    background: #fafafa;
+    border-radius: 12px;
+}
+
+.selected-info {
+    background: #DBF4FF;
+    border-radius: 10px;
+    padding: 11px 13px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status-box {
+    display: none;
+    margin-top: 17px;
+    padding: 13px;
     border-radius: 10px;
     line-height: 1.5;
 }
 
 .status-info {
-    display: block !important;
+    display: block;
     background: #DBF4FF;
 }
 
 .status-success {
-    display: block !important;
-    background: #e4f8e9;
+    display: block;
+    background: #e4f7e9;
 }
 
 .status-error {
-    display: block !important;
+    display: block;
     background: #ffe5e5;
+    color: #7c2020;
 }
+
+#loginError {
+    display: none;
+    margin-top: 16px;
+    padding: 13px;
+    border-radius: 10px;
+    background: #ffe5e5;
+    color: #7c2020;
+    white-space: pre-line;
+}
+
+/* =========================
+   LOGO
+========================= */
 
 .bottom-logo {
-    display: block;
     width: 100%;
-    max-width: 440px;
-    margin: 35px auto 0;
+    max-width: 430px;
+    display: block;
+    margin: 30px auto 0;
 }
 
-@media(max-width:650px) {
-    .login-card {
-        padding: 25px 20px;
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px;
+    width: 100%;
+    max-width: 480px;
+}
+
+.modal-card h3 {
+    margin-top: 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-actions button {
+    flex: 1;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px) {
+    .header-inner {
+        display: block;
     }
 
-    .container {
-        margin: 15px;
-        padding: 22px 18px;
+    .account-box {
+        text-align: left;
+        margin-top: 15px;
     }
 
     .row {
         display: block;
     }
 
-    .header-inner {
-        display: block;
+    .contacts-toolbar {
+        grid-template-columns: 1fr;
     }
 
-    .account {
-        text-align: left;
-        margin-top: 15px;
+    .contact-item {
+        grid-template-columns: 30px 1fr;
+    }
+
+    .contact-buttons {
+        grid-column: 2;
+        margin-top: 8px;
+    }
+
+    .card {
+        padding: 19px;
     }
 }
 </style>
@@ -252,21 +482,23 @@ h1 {
 
 <body>
 
-<!-- ВХОД -->
+<!-- =========================
+     LOGIN
+========================= -->
 
 <div id="loginScreen">
 
     <div class="login-card">
 
         <img
-            class="logo"
+            class="login-logo"
             src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
             alt="ДОС"
         >
 
         <h1>Вход в систему</h1>
 
-        <p class="description">
+        <p class="login-description">
             Система рассылки Детского общественного совета
             при Уполномоченном по правам ребёнка
             в Самарской области
@@ -275,23 +507,19 @@ h1 {
         <form id="loginForm">
 
             <div class="field">
-                <label for="loginEmail">
-                    Электронная почта
-                </label>
+                <label>Электронная почта</label>
 
                 <input
                     id="loginEmail"
                     type="email"
-                    autocomplete="username"
                     value="dos.upr.63@yandex.ru"
+                    autocomplete="username"
                     required
                 >
             </div>
 
             <div class="field">
-                <label for="loginPassword">
-                    Пароль
-                </label>
+                <label>Пароль</label>
 
                 <input
                     id="loginPassword"
@@ -303,7 +531,7 @@ h1 {
 
             <button
                 id="loginButton"
-                class="main-button"
+                class="primary-button full-button"
                 type="submit"
             >
                 Войти
@@ -314,10 +542,13 @@ h1 {
         <div id="loginError"></div>
 
     </div>
+
 </div>
 
 
-<!-- ПАНЕЛЬ РАССЫЛКИ -->
+<!-- =========================
+     APP
+========================= -->
 
 <div id="appScreen">
 
@@ -326,7 +557,7 @@ h1 {
     <div class="header-inner">
 
         <div>
-            <h2>Система рассылки ВКС</h2>
+            <h1>Система рассылки ВКС</h1>
 
             <p>
                 Детский общественный совет при Уполномоченном
@@ -334,12 +565,12 @@ h1 {
             </p>
         </div>
 
-        <div class="account">
+        <div class="account-box">
 
             <div id="currentUser"></div>
 
             <button
-                class="logout"
+                class="logout-button"
                 onclick="logout()"
             >
                 Выйти
@@ -352,53 +583,157 @@ h1 {
 </header>
 
 
-<main class="container">
+<main class="page">
 
-    <h2>Создать рассылку</h2>
+<!-- =========================
+     CONTACTS
+========================= -->
 
-    <p>
-        Заполните информацию о предстоящей ВКС.
+<section class="card">
+
+    <h2>Контакты</h2>
+
+    <p class="card-subtitle">
+        Выберите участников, которым нужно отправить письмо.
     </p>
 
-    <div class="field">
+    <div class="contact-form">
 
-        <label for="emails">
-            Получатели
-        </label>
+        <div class="contact-form-title">
+            Добавить контакт
+        </div>
 
-        <textarea
-            id="emails"
-            placeholder="example@yandex.ru&#10;example2@mail.ru"
-        ></textarea>
+        <div class="row">
 
-        <small>
-            Адреса можно вводить с новой строки,
-            через запятую или точку с запятой.
-        </small>
+            <div class="field">
+                <label>ФИО</label>
+
+                <input
+                    id="newFullName"
+                    type="text"
+                    placeholder="Иванов Иван Иванович"
+                >
+            </div>
+
+            <div class="field">
+                <label>Электронная почта</label>
+
+                <input
+                    id="newEmail"
+                    type="email"
+                    placeholder="example@yandex.ru"
+                >
+            </div>
+
+        </div>
+
+        <div class="field">
+            <label>Отдел</label>
+
+            <input
+                id="newDepartment"
+                type="text"
+                placeholder="Например: Пресс-служба"
+            >
+        </div>
+
+        <button
+            class="primary-button"
+            onclick="addContact()"
+        >
+            + Добавить контакт
+        </button>
 
     </div>
 
+
+    <div class="contacts-toolbar">
+
+        <input
+            id="searchContact"
+            type="text"
+            placeholder="Поиск по ФИО или почте"
+            oninput="renderContacts()"
+        >
+
+        <select
+            id="departmentFilter"
+            onchange="renderContacts()"
+        >
+            <option value="">
+                Все отделы
+            </option>
+        </select>
+
+    </div>
+
+
+    <div class="contacts-actions">
+
+        <button
+            class="secondary-button"
+            onclick="selectVisibleContacts()"
+        >
+            Выбрать всех
+        </button>
+
+        <button
+            class="secondary-button"
+            onclick="clearSelection()"
+        >
+            Снять выбор
+        </button>
+
+    </div>
+
+
+    <div
+        id="selectedInfo"
+        class="selected-info"
+    >
+        Выбрано: 0
+    </div>
+
+
+    <div
+        id="contactsList"
+        class="contact-list"
+    ></div>
+
+</section>
+
+
+<!-- =========================
+     MAILING
+========================= -->
+
+<section class="card">
+
+    <h2>Создать рассылку</h2>
+
+    <p class="card-subtitle">
+        Письмо будет отправлено выбранным контактам.
+    </p>
+
+
     <div class="field">
 
-        <label for="meetingName">
-            Название ВКС
-        </label>
+        <label>Название ВКС</label>
 
         <input
             id="meetingName"
             type="text"
-            placeholder="Организационная ВКС"
+            placeholder="Например: Организационная ВКС"
         >
 
     </div>
+
 
     <div class="row">
 
         <div class="field">
 
-            <label for="meetingDate">
-                Дата
-            </label>
+            <label>Дата</label>
 
             <input
                 id="meetingDate"
@@ -409,9 +744,7 @@ h1 {
 
         <div class="field">
 
-            <label for="meetingTime">
-                Время
-            </label>
+            <label>Время</label>
 
             <input
                 id="meetingTime"
@@ -422,11 +755,10 @@ h1 {
 
     </div>
 
+
     <div class="field">
 
-        <label for="meetingLink">
-            Ссылка на ВКС
-        </label>
+        <label>Ссылка на ВКС</label>
 
         <input
             id="meetingLink"
@@ -436,15 +768,21 @@ h1 {
 
     </div>
 
+
     <button
         id="sendButton"
-        class="main-button"
+        class="primary-button full-button"
         onclick="sendMailing()"
     >
-        Отправить рассылку
+        Отправить выбранным
     </button>
 
-    <div id="status"></div>
+
+    <div
+        id="status"
+        class="status-box"
+    ></div>
+
 
     <img
         class="bottom-logo"
@@ -452,7 +790,77 @@ h1 {
         alt="ДОС"
     >
 
+</section>
+
 </main>
+
+</div>
+
+
+<!-- =========================
+     EDIT MODAL
+========================= -->
+
+<div
+    id="editModal"
+    class="modal"
+>
+
+    <div class="modal-card">
+
+        <h3>Редактировать контакт</h3>
+
+        <input
+            id="editContactId"
+            type="hidden"
+        >
+
+        <div class="field">
+            <label>ФИО</label>
+
+            <input
+                id="editFullName"
+                type="text"
+            >
+        </div>
+
+        <div class="field">
+            <label>Электронная почта</label>
+
+            <input
+                id="editEmail"
+                type="email"
+            >
+        </div>
+
+        <div class="field">
+            <label>Отдел</label>
+
+            <input
+                id="editDepartment"
+                type="text"
+            >
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-button"
+                onclick="closeEditModal()"
+            >
+                Отмена
+            </button>
+
+            <button
+                class="primary-button"
+                onclick="saveEditedContact()"
+            >
+                Сохранить
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -460,7 +868,7 @@ h1 {
 <script>
 
 /* =========================
-   FIREBASE
+   FIREBASE CONFIG
 ========================= */
 
 const firebaseConfig = {
@@ -475,11 +883,50 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const auth = firebase.auth();
+const auth =
+    firebase.auth();
+
+const db =
+    firebase.firestore();
+
 
 const ALLOWED_EMAILS = [
     "dos.upr.63@yandex.ru"
 ];
+
+
+/* =========================
+   EMAILJS
+========================= */
+
+emailjs.init({
+    publicKey:
+        "io1-lDIrdgcuHqN5X"
+});
+
+const SERVICE_ID =
+    "service_cjzdlke";
+
+const TEMPLATE_ID =
+    "template_61girbl";
+
+
+/* =========================
+   GLOBAL DATA
+========================= */
+
+let contacts = [];
+
+let selectedIds =
+    new Set();
+
+let unsubscribeContacts =
+    null;
+
+
+/* =========================
+   AUTH HELPERS
+========================= */
 
 function isAllowedUser(user) {
 
@@ -488,29 +935,37 @@ function isAllowedUser(user) {
     }
 
     return ALLOWED_EMAILS
-        .map(x => x.toLowerCase())
+        .map(email =>
+            email.toLowerCase()
+        )
         .includes(
             user.email.toLowerCase()
         );
+
 }
 
 
-/* Сохраняем вход */
+/* =========================
+   LOGIN
+========================= */
 
 auth.setPersistence(
     firebase.auth.Auth.Persistence.LOCAL
 );
 
 
-/* Проверяем состояние входа */
-
 auth.onAuthStateChanged(async user => {
 
     const loginScreen =
-        document.getElementById("loginScreen");
+        document.getElementById(
+            "loginScreen"
+        );
 
     const appScreen =
-        document.getElementById("appScreen");
+        document.getElementById(
+            "appScreen"
+        );
+
 
     if (
         user &&
@@ -528,6 +983,8 @@ auth.onAuthStateChanged(async user => {
         ).textContent =
             user.email;
 
+        startContactsListener();
+
     }
 
     else {
@@ -542,14 +999,15 @@ auth.onAuthStateChanged(async user => {
         loginScreen.style.display =
             "flex";
 
+        if (unsubscribeContacts) {
+            unsubscribeContacts();
+            unsubscribeContacts = null;
+        }
+
     }
 
 });
 
-
-/* =========================
-   ВХОД
-========================= */
 
 document
 .getElementById("loginForm")
@@ -579,17 +1037,16 @@ document
             document
             .getElementById("loginError");
 
+
         errorBox.style.display =
             "none";
-
-        errorBox.textContent =
-            "";
 
         button.disabled =
             true;
 
         button.textContent =
             "Проверяем…";
+
 
         try {
 
@@ -608,12 +1065,9 @@ document
 
                 await auth.signOut();
 
-                throw {
-                    code:
-                        "auth/no-access",
-                    message:
-                        "У этого аккаунта нет доступа."
-                };
+                throw new Error(
+                    "NO_ACCESS"
+                );
 
             }
 
@@ -621,71 +1075,18 @@ document
 
         catch (error) {
 
-            console.error(
-                "Firebase login error:",
-                error
-            );
+            console.error(error);
 
-            let explanation =
-                "Не удалось выполнить вход.";
+            let message =
+                "Не удалось войти.";
 
             if (
                 error.code ===
                 "auth/invalid-credential"
             ) {
 
-                explanation =
-                    "Firebase не принял электронную почту или пароль.";
-
-            }
-
-            else if (
-                error.code ===
-                "auth/wrong-password"
-            ) {
-
-                explanation =
-                    "Указан неправильный пароль.";
-
-            }
-
-            else if (
-                error.code ===
-                "auth/user-not-found"
-            ) {
-
-                explanation =
-                    "Такого пользователя нет в Firebase.";
-
-            }
-
-            else if (
-                error.code ===
-                "auth/invalid-email"
-            ) {
-
-                explanation =
-                    "Некорректный адрес электронной почты.";
-
-            }
-
-            else if (
-                error.code ===
-                "auth/unauthorized-domain"
-            ) {
-
-                explanation =
-                    "Домен GitHub Pages не разрешён в Firebase.";
-
-            }
-
-            else if (
-                error.code ===
-                "auth/network-request-failed"
-            ) {
-
-                explanation =
-                    "Не удалось связаться с Firebase. Проверьте интернет.";
+                message =
+                    "Неверная электронная почта или пароль.";
 
             }
 
@@ -694,28 +1095,24 @@ document
                 "auth/too-many-requests"
             ) {
 
-                explanation =
-                    "Слишком много попыток входа. Firebase временно ограничил вход.";
+                message =
+                    "Слишком много попыток входа. Попробуйте позже.";
 
             }
 
             else if (
-                error.code ===
-                "auth/no-access"
+                error.message ===
+                "NO_ACCESS"
             ) {
 
-                explanation =
-                    "Этот пользователь не разрешён для входа в систему.";
+                message =
+                    "У аккаунта нет доступа к системе.";
 
             }
 
+
             errorBox.textContent =
-                explanation +
-                "\n\nКод ошибки: " +
-                (
-                    error.code ||
-                    "неизвестная ошибка"
-                );
+                message;
 
             errorBox.style.display =
                 "block";
@@ -736,88 +1133,788 @@ document
 );
 
 
-/* =========================
-   ВЫХОД
-========================= */
-
 async function logout() {
+
+    if (unsubscribeContacts) {
+        unsubscribeContacts();
+        unsubscribeContacts = null;
+    }
+
+    selectedIds.clear();
 
     await auth.signOut();
 
-    document
-        .getElementById(
-            "loginPassword"
-        )
-        .value = "";
-
 }
 
 
 /* =========================
-   EMAILJS
+   FIRESTORE CONTACTS
 ========================= */
 
-emailjs.init({
-    publicKey:
-        "io1-lDIrdgcuHqN5X"
-});
+function startContactsListener() {
 
-const SERVICE_ID =
-    "service_cjzdlke";
-
-const TEMPLATE_ID =
-    "template_61girbl";
-
-
-function sleep(ms) {
-
-    return new Promise(
-        resolve =>
-            setTimeout(
-                resolve,
-                ms
-            )
-    );
-
-}
-
-
-function formatDate(date) {
-
-    if (!date) {
-        return "";
+    if (unsubscribeContacts) {
+        unsubscribeContacts();
     }
 
-    const parts =
-        date.split("-");
+    unsubscribeContacts =
+        db.collection("contacts")
+        .onSnapshot(
+            snapshot => {
 
-    return (
-        parts[2] +
-        "." +
-        parts[1] +
-        "." +
-        parts[0]
-    );
+                contacts =
+                    snapshot.docs.map(
+                        doc => ({
+                            id: doc.id,
+                            ...doc.data()
+                        })
+                    );
 
-}
+                contacts.sort(
+                    (a, b) =>
+                        (a.fullName || "")
+                        .localeCompare(
+                            b.fullName || "",
+                            "ru"
+                        )
+                );
 
+                updateDepartmentFilter();
 
-function validEmail(email) {
+                renderContacts();
 
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(email);
+            },
+
+            error => {
+
+                console.error(
+                    "Firestore:",
+                    error
+                );
+
+                alert(
+                    "Не удалось загрузить контакты из Firebase."
+                );
+
+            }
+        );
 
 }
 
 
 /* =========================
-   ОТПРАВКА
+   ADD CONTACT
+========================= */
+
+async function addContact() {
+
+    const fullName =
+        document
+        .getElementById(
+            "newFullName"
+        )
+        .value
+        .trim();
+
+    const email =
+        document
+        .getElementById(
+            "newEmail"
+        )
+        .value
+        .trim()
+        .toLowerCase();
+
+    const department =
+        document
+        .getElementById(
+            "newDepartment"
+        )
+        .value
+        .trim();
+
+
+    if (!fullName) {
+
+        alert(
+            "Укажите ФИО."
+        );
+
+        return;
+
+    }
+
+
+    if (!validEmail(email)) {
+
+        alert(
+            "Укажите корректную электронную почту."
+        );
+
+        return;
+
+    }
+
+
+    const duplicate =
+        contacts.some(
+            contact =>
+                (
+                    contact.email ||
+                    ""
+                )
+                .toLowerCase() ===
+                email
+        );
+
+
+    if (duplicate) {
+
+        alert(
+            "Контакт с такой электронной почтой уже есть."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await db
+            .collection("contacts")
+            .add({
+
+                fullName:
+                    fullName,
+
+                email:
+                    email,
+
+                department:
+                    department,
+
+                createdAt:
+                    firebase
+                    .firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+
+        document
+            .getElementById(
+                "newFullName"
+            )
+            .value = "";
+
+        document
+            .getElementById(
+                "newEmail"
+            )
+            .value = "";
+
+        document
+            .getElementById(
+                "newDepartment"
+            )
+            .value = "";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Не удалось сохранить контакт."
+        );
+
+    }
+
+}
+
+
+/* =========================
+   EDIT CONTACT
+========================= */
+
+function openEditModal(id) {
+
+    const contact =
+        contacts.find(
+            contact =>
+                contact.id === id
+        );
+
+    if (!contact) {
+        return;
+    }
+
+
+    document
+        .getElementById(
+            "editContactId"
+        )
+        .value =
+            contact.id;
+
+    document
+        .getElementById(
+            "editFullName"
+        )
+        .value =
+            contact.fullName || "";
+
+    document
+        .getElementById(
+            "editEmail"
+        )
+        .value =
+            contact.email || "";
+
+    document
+        .getElementById(
+            "editDepartment"
+        )
+        .value =
+            contact.department || "";
+
+
+    document
+        .getElementById(
+            "editModal"
+        )
+        .classList
+        .add("show");
+
+}
+
+
+function closeEditModal() {
+
+    document
+        .getElementById(
+            "editModal"
+        )
+        .classList
+        .remove("show");
+
+}
+
+
+async function saveEditedContact() {
+
+    const id =
+        document
+        .getElementById(
+            "editContactId"
+        )
+        .value;
+
+    const fullName =
+        document
+        .getElementById(
+            "editFullName"
+        )
+        .value
+        .trim();
+
+    const email =
+        document
+        .getElementById(
+            "editEmail"
+        )
+        .value
+        .trim()
+        .toLowerCase();
+
+    const department =
+        document
+        .getElementById(
+            "editDepartment"
+        )
+        .value
+        .trim();
+
+
+    if (!fullName) {
+
+        alert(
+            "Укажите ФИО."
+        );
+
+        return;
+
+    }
+
+
+    if (!validEmail(email)) {
+
+        alert(
+            "Укажите корректную электронную почту."
+        );
+
+        return;
+
+    }
+
+
+    const duplicate =
+        contacts.some(
+            contact =>
+                contact.id !== id &&
+                (
+                    contact.email ||
+                    ""
+                )
+                .toLowerCase() ===
+                email
+        );
+
+
+    if (duplicate) {
+
+        alert(
+            "Другой контакт уже использует эту почту."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await db
+            .collection("contacts")
+            .doc(id)
+            .update({
+
+                fullName:
+                    fullName,
+
+                email:
+                    email,
+
+                department:
+                    department,
+
+                updatedAt:
+                    firebase
+                    .firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+
+        closeEditModal();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Не удалось изменить контакт."
+        );
+
+    }
+
+}
+
+
+/* =========================
+   DELETE CONTACT
+========================= */
+
+async function deleteContact(id) {
+
+    const contact =
+        contacts.find(
+            contact =>
+                contact.id === id
+        );
+
+
+    if (!contact) {
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "Удалить контакт?\n\n" +
+            contact.fullName
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        selectedIds.delete(id);
+
+        await db
+            .collection("contacts")
+            .doc(id)
+            .delete();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Не удалось удалить контакт."
+        );
+
+    }
+
+}
+
+
+/* =========================
+   FILTERS
+========================= */
+
+function getFilteredContacts() {
+
+    const search =
+        document
+        .getElementById(
+            "searchContact"
+        )
+        .value
+        .trim()
+        .toLowerCase();
+
+    const department =
+        document
+        .getElementById(
+            "departmentFilter"
+        )
+        .value;
+
+
+    return contacts.filter(
+        contact => {
+
+            const text =
+                (
+                    (
+                        contact.fullName ||
+                        ""
+                    ) +
+                    " " +
+                    (
+                        contact.email ||
+                        ""
+                    )
+                )
+                .toLowerCase();
+
+
+            const searchOk =
+                !search ||
+                text.includes(search);
+
+
+            const departmentOk =
+                !department ||
+                (
+                    contact.department ||
+                    ""
+                ) === department;
+
+
+            return (
+                searchOk &&
+                departmentOk
+            );
+
+        }
+    );
+
+}
+
+
+function updateDepartmentFilter() {
+
+    const select =
+        document
+        .getElementById(
+            "departmentFilter"
+        );
+
+    const current =
+        select.value;
+
+
+    const departments =
+        [
+            ...new Set(
+                contacts
+                    .map(
+                        contact =>
+                            (
+                                contact.department ||
+                                ""
+                            )
+                            .trim()
+                    )
+                    .filter(Boolean)
+            )
+        ]
+        .sort(
+            (a, b) =>
+                a.localeCompare(
+                    b,
+                    "ru"
+                )
+        );
+
+
+    select.innerHTML =
+        '<option value="">Все отделы</option>';
+
+
+    departments.forEach(
+        department => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                department;
+
+            option.textContent =
+                department;
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    if (
+        departments.includes(
+            current
+        )
+    ) {
+
+        select.value =
+            current;
+
+    }
+
+}
+
+
+/* =========================
+   RENDER CONTACTS
+========================= */
+
+function renderContacts() {
+
+    const list =
+        document
+        .getElementById(
+            "contactsList"
+        );
+
+    const filtered =
+        getFilteredContacts();
+
+
+    list.innerHTML = "";
+
+
+    if (
+        filtered.length === 0
+    ) {
+
+        list.innerHTML =
+            '<div class="no-contacts">' +
+            'Контактов пока нет.' +
+            '</div>';
+
+        updateSelectedInfo();
+
+        return;
+
+    }
+
+
+    filtered.forEach(
+        contact => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "contact-item";
+
+
+            const checked =
+                selectedIds.has(
+                    contact.id
+                );
+
+
+            item.innerHTML = `
+
+                <input
+                    class="contact-check"
+                    type="checkbox"
+                    ${checked ? "checked" : ""}
+                    onchange="toggleContact('${contact.id}', this.checked)"
+                >
+
+                <div>
+
+                    <div class="contact-name">
+                        ${escapeHtml(contact.fullName || "")}
+                    </div>
+
+                    <div class="contact-email">
+                        ${escapeHtml(contact.email || "")}
+                    </div>
+
+                    ${
+                        contact.department
+                        ?
+                        `
+                        <div class="contact-department">
+                            ${escapeHtml(contact.department)}
+                        </div>
+                        `
+                        :
+                        ""
+                    }
+
+                </div>
+
+                <div class="contact-buttons">
+
+                    <button
+                        class="secondary-button"
+                        onclick="openEditModal('${contact.id}')"
+                    >
+                        Изменить
+                    </button>
+
+                    <button
+                        class="danger-button"
+                        onclick="deleteContact('${contact.id}')"
+                    >
+                        Удалить
+                    </button>
+
+                </div>
+            `;
+
+
+            list.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    updateSelectedInfo();
+
+}
+
+
+/* =========================
+   SELECTION
+========================= */
+
+function toggleContact(
+    id,
+    checked
+) {
+
+    if (checked) {
+
+        selectedIds.add(id);
+
+    }
+
+    else {
+
+        selectedIds.delete(id);
+
+    }
+
+
+    updateSelectedInfo();
+
+}
+
+
+function selectVisibleContacts() {
+
+    getFilteredContacts()
+        .forEach(
+            contact =>
+                selectedIds.add(
+                    contact.id
+                )
+        );
+
+
+    renderContacts();
+
+}
+
+
+function clearSelection() {
+
+    selectedIds.clear();
+
+    renderContacts();
+
+}
+
+
+function updateSelectedInfo() {
+
+    document
+        .getElementById(
+            "selectedInfo"
+        )
+        .textContent =
+            "Выбрано: " +
+            selectedIds.size;
+
+}
+
+
+/* =========================
+   MAILING
 ========================= */
 
 async function sendMailing() {
 
     const user =
         auth.currentUser;
+
 
     if (
         !user ||
@@ -834,125 +1931,96 @@ async function sendMailing() {
 
     }
 
-    const emailText =
-        document
-        .getElementById("emails")
-        .value;
+
+    const recipients =
+        contacts.filter(
+            contact =>
+                selectedIds.has(
+                    contact.id
+                )
+        );
+
+
+    if (
+        recipients.length === 0
+    ) {
+
+        showStatus(
+            "Выберите хотя бы одного получателя.",
+            "error"
+        );
+
+        return;
+
+    }
+
 
     const meetingName =
         document
-        .getElementById("meetingName")
+        .getElementById(
+            "meetingName"
+        )
         .value
         .trim();
 
     const meetingDate =
         document
-        .getElementById("meetingDate")
+        .getElementById(
+            "meetingDate"
+        )
         .value;
 
     const meetingTime =
         document
-        .getElementById("meetingTime")
+        .getElementById(
+            "meetingTime"
+        )
         .value;
 
     const meetingLink =
         document
-        .getElementById("meetingLink")
+        .getElementById(
+            "meetingLink"
+        )
         .value
         .trim();
 
-    const status =
-        document.getElementById("status");
-
-    const button =
-        document.getElementById("sendButton");
-
-    const emails =
-        emailText
-        .split(/[\n,;]+/)
-        .map(
-            x => x.trim()
-        )
-        .filter(Boolean);
-
-    if (!emails.length) {
-
-        status.className =
-            "status-error";
-
-        status.textContent =
-            "Укажите хотя бы одного получателя.";
-
-        return;
-
-    }
-
-    const invalid =
-        emails.filter(
-            email =>
-                !validEmail(email)
-        );
-
-    if (invalid.length) {
-
-        status.className =
-            "status-error";
-
-        status.innerHTML =
-            "Проверьте адреса:<br>" +
-            invalid.join("<br>");
-
-        return;
-
-    }
 
     if (!meetingName) {
 
-        status.className =
-            "status-error";
-
-        status.textContent =
-            "Укажите название ВКС.";
+        showStatus(
+            "Укажите название ВКС.",
+            "error"
+        );
 
         return;
 
     }
+
 
     if (!meetingDate) {
 
-        status.className =
-            "status-error";
-
-        status.textContent =
-            "Укажите дату.";
+        showStatus(
+            "Укажите дату ВКС.",
+            "error"
+        );
 
         return;
 
     }
+
 
     if (!meetingTime) {
 
-        status.className =
-            "status-error";
-
-        status.textContent =
-            "Укажите время.";
-
-        return;
-
-    }
-
-    if (!meetingLink) {
-
-        status.className =
-            "status-error";
-
-        status.textContent =
-            "Укажите ссылку на ВКС.";
+        showStatus(
+            "Укажите время ВКС.",
+            "error"
+        );
 
         return;
 
     }
+
 
     try {
 
@@ -962,42 +2030,61 @@ async function sendMailing() {
 
     catch {
 
-        status.className =
-            "status-error";
-
-        status.textContent =
-            "Укажите корректную ссылку.";
+        showStatus(
+            "Укажите корректную ссылку на ВКС.",
+            "error"
+        );
 
         return;
 
     }
 
+
+    const button =
+        document
+        .getElementById(
+            "sendButton"
+        );
+
+
     button.disabled =
         true;
 
-    let sent = 0;
-    let failed = 0;
+
+    let sent =
+        0;
+
+    let failed =
+        0;
+
 
     for (
         let i = 0;
-        i < emails.length;
+        i < recipients.length;
         i++
     ) {
 
-        const email =
-            emails[i];
+        const contact =
+            recipients[i];
 
-        status.className =
-            "status-info";
 
-        status.innerHTML =
-            "Отправляем " +
+        showStatus(
+            "Отправляем письмо " +
             (i + 1) +
             " из " +
-            emails.length +
+            recipients.length +
             "<br><b>" +
-            email +
-            "</b>";
+            escapeHtml(
+                contact.fullName
+            ) +
+            "</b><br>" +
+            escapeHtml(
+                contact.email
+            ),
+            "info",
+            true
+        );
+
 
         try {
 
@@ -1008,8 +2095,9 @@ async function sendMailing() {
                 TEMPLATE_ID,
 
                 {
+
                     to_email:
-                        email,
+                        contact.email,
 
                     meeting_name:
                         meetingName,
@@ -1023,10 +2111,15 @@ async function sendMailing() {
                         meetingTime,
 
                     meeting_link:
-                        meetingLink
+                        meetingLink,
+
+                    participant_name:
+                        contact.fullName || ""
+
                 }
 
             );
+
 
             sent++;
 
@@ -1043,52 +2136,190 @@ async function sendMailing() {
 
         }
 
+
         if (
             i <
-            emails.length - 1
+            recipients.length - 1
         ) {
 
-            await sleep(1200);
+            await sleep(
+                1200
+            );
 
         }
 
     }
 
+
     button.disabled =
         false;
+
 
     if (
         failed === 0
     ) {
 
-        status.className =
-            "status-success";
-
-        status.innerHTML =
+        showStatus(
             "✅ Рассылка завершена.<br>" +
             "Отправлено писем: <b>" +
             sent +
-            "</b>";
+            "</b>",
+            "success",
+            true
+        );
 
     }
 
     else {
 
-        status.className =
-            "status-error";
-
-        status.innerHTML =
+        showStatus(
             "Рассылка завершена.<br>" +
             "Отправлено: <b>" +
             sent +
             "</b><br>" +
             "Ошибок: <b>" +
             failed +
-            "</b>";
+            "</b>",
+            "error",
+            true
+        );
 
     }
 
 }
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function validEmail(email) {
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(email);
+
+}
+
+
+function formatDate(date) {
+
+    if (!date) {
+        return "";
+    }
+
+    const parts =
+        date.split("-");
+
+
+    return (
+        parts[2] +
+        "." +
+        parts[1] +
+        "." +
+        parts[0]
+    );
+
+}
+
+
+function sleep(ms) {
+
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
+    );
+
+}
+
+
+function showStatus(
+    message,
+    type,
+    html = false
+) {
+
+    const status =
+        document
+        .getElementById(
+            "status"
+        );
+
+
+    status.className =
+        "status-box status-" +
+        type;
+
+
+    if (html) {
+
+        status.innerHTML =
+            message;
+
+    }
+
+    else {
+
+        status.textContent =
+            message;
+
+    }
+
+}
+
+
+function escapeHtml(value) {
+
+    return String(
+        value || ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* Закрытие окна редактирования по клику на фон */
+
+document
+.getElementById(
+    "editModal"
+)
+.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target.id ===
+            "editModal"
+        ) {
+
+            closeEditModal();
+
+        }
+
+    }
+);
 
 </script>
 
