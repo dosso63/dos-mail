@@ -15,7 +15,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 
 <style>
-
 * {
     box-sizing: border-box;
 }
@@ -226,7 +225,6 @@ h1 {
 }
 
 @media(max-width:650px) {
-
     .login-card {
         padding: 25px 20px;
     }
@@ -249,13 +247,10 @@ h1 {
         margin-top: 15px;
     }
 }
-
 </style>
 </head>
 
-
 <body>
-
 
 <!-- ВХОД -->
 
@@ -277,11 +272,9 @@ h1 {
             в Самарской области
         </p>
 
-
         <form id="loginForm">
 
             <div class="field">
-
                 <label for="loginEmail">
                     Электронная почта
                 </label>
@@ -293,12 +286,9 @@ h1 {
                     value="dos.upr.63@yandex.ru"
                     required
                 >
-
             </div>
 
-
             <div class="field">
-
                 <label for="loginPassword">
                     Пароль
                 </label>
@@ -309,9 +299,7 @@ h1 {
                     autocomplete="current-password"
                     required
                 >
-
             </div>
-
 
             <button
                 id="loginButton"
@@ -323,13 +311,10 @@ h1 {
 
         </form>
 
-
         <div id="loginError"></div>
 
     </div>
-
 </div>
-
 
 
 <!-- ПАНЕЛЬ РАССЫЛКИ -->
@@ -341,16 +326,13 @@ h1 {
     <div class="header-inner">
 
         <div>
-
             <h2>Система рассылки ВКС</h2>
 
             <p>
                 Детский общественный совет при Уполномоченном
                 по правам ребёнка в Самарской области
             </p>
-
         </div>
-
 
         <div class="account">
 
@@ -378,7 +360,6 @@ h1 {
         Заполните информацию о предстоящей ВКС.
     </p>
 
-
     <div class="field">
 
         <label for="emails">
@@ -397,7 +378,6 @@ h1 {
 
     </div>
 
-
     <div class="field">
 
         <label for="meetingName">
@@ -411,7 +391,6 @@ h1 {
         >
 
     </div>
-
 
     <div class="row">
 
@@ -428,7 +407,6 @@ h1 {
 
         </div>
 
-
         <div class="field">
 
             <label for="meetingTime">
@@ -444,7 +422,6 @@ h1 {
 
     </div>
 
-
     <div class="field">
 
         <label for="meetingLink">
@@ -459,7 +436,6 @@ h1 {
 
     </div>
 
-
     <button
         id="sendButton"
         class="main-button"
@@ -468,9 +444,7 @@ h1 {
         Отправить рассылку
     </button>
 
-
     <div id="status"></div>
-
 
     <img
         class="bottom-logo"
@@ -483,7 +457,6 @@ h1 {
 </div>
 
 
-
 <script>
 
 /* =========================
@@ -491,39 +464,22 @@ h1 {
 ========================= */
 
 const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyAfTNjfuWGb889ZrINp_2KEwHWYywJc1E0",
-
-    authDomain:
-        "dos-mail.firebaseapp.com",
-
-    projectId:
-        "dos-mail",
-
-    storageBucket:
-        "dos-mail.firebasestorage.app",
-
-    messagingSenderId:
-        "430305221467",
-
-    appId:
-        "1:430305221467:web:09e222f4fec1b734d0187e",
-
-    measurementId:
-        "G-LPNHXMQKDR"
+    apiKey: "AIzaSyAfTNifuWGb889ZrINp_2KEwHWYywJc1E0",
+    authDomain: "dos-mail.firebaseapp.com",
+    projectId: "dos-mail",
+    storageBucket: "dos-mail.firebasestorage.app",
+    messagingSenderId: "430305221467",
+    appId: "1:430305221467:web:09e222f4fec1b734d0187e",
+    measurementId: "G-LPNHXMQKDR"
 };
-
 
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 
-
 const ALLOWED_EMAILS = [
     "dos.upr.63@yandex.ru"
 ];
-
 
 function isAllowedUser(user) {
 
@@ -555,7 +511,6 @@ auth.onAuthStateChanged(async user => {
 
     const appScreen =
         document.getElementById("appScreen");
-
 
     if (
         user &&
@@ -592,7 +547,6 @@ auth.onAuthStateChanged(async user => {
 });
 
 
-
 /* =========================
    ВХОД
 ========================= */
@@ -605,7 +559,6 @@ document
 
         event.preventDefault();
 
-
         const email =
             document
             .getElementById("loginEmail")
@@ -613,22 +566,18 @@ document
             .trim()
             .toLowerCase();
 
-
         const password =
             document
             .getElementById("loginPassword")
             .value;
 
-
         const button =
             document
             .getElementById("loginButton");
 
-
         const errorBox =
             document
             .getElementById("loginError");
-
 
         errorBox.style.display =
             "none";
@@ -642,7 +591,6 @@ document
         button.textContent =
             "Проверяем…";
 
-
         try {
 
             const result =
@@ -651,7 +599,6 @@ document
                     email,
                     password
                 );
-
 
             if (
                 !isAllowedUser(
@@ -679,10 +626,8 @@ document
                 error
             );
 
-
             let explanation =
                 "Не удалось выполнить вход.";
-
 
             if (
                 error.code ===
@@ -736,16 +681,6 @@ document
 
             else if (
                 error.code ===
-                "auth/api-key-not-valid"
-            ) {
-
-                explanation =
-                    "Ошибка Firebase API Key.";
-
-            }
-
-            else if (
-                error.code ===
                 "auth/network-request-failed"
             ) {
 
@@ -774,7 +709,6 @@ document
 
             }
 
-
             errorBox.textContent =
                 explanation +
                 "\n\nКод ошибки: " +
@@ -782,7 +716,6 @@ document
                     error.code ||
                     "неизвестная ошибка"
                 );
-
 
             errorBox.style.display =
                 "block";
@@ -803,7 +736,6 @@ document
 );
 
 
-
 /* =========================
    ВЫХОД
 ========================= */
@@ -821,26 +753,20 @@ async function logout() {
 }
 
 
-
 /* =========================
    EMAILJS
 ========================= */
 
 emailjs.init({
-
     publicKey:
         "io1-lDIrdgcuHqN5X"
-
 });
-
 
 const SERVICE_ID =
     "service_cjzdlke";
 
-
 const TEMPLATE_ID =
     "template_61girbl";
-
 
 
 function sleep(ms) {
@@ -854,7 +780,6 @@ function sleep(ms) {
     );
 
 }
-
 
 
 function formatDate(date) {
@@ -877,14 +802,12 @@ function formatDate(date) {
 }
 
 
-
 function validEmail(email) {
 
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         .test(email);
 
 }
-
 
 
 /* =========================
@@ -895,7 +818,6 @@ async function sendMailing() {
 
     const user =
         auth.currentUser;
-
 
     if (
         !user ||
@@ -912,12 +834,10 @@ async function sendMailing() {
 
     }
 
-
     const emailText =
         document
         .getElementById("emails")
         .value;
-
 
     const meetingName =
         document
@@ -925,18 +845,15 @@ async function sendMailing() {
         .value
         .trim();
 
-
     const meetingDate =
         document
         .getElementById("meetingDate")
         .value;
 
-
     const meetingTime =
         document
         .getElementById("meetingTime")
         .value;
-
 
     const meetingLink =
         document
@@ -944,14 +861,11 @@ async function sendMailing() {
         .value
         .trim();
 
-
     const status =
         document.getElementById("status");
 
-
     const button =
         document.getElementById("sendButton");
-
 
     const emails =
         emailText
@@ -960,7 +874,6 @@ async function sendMailing() {
             x => x.trim()
         )
         .filter(Boolean);
-
 
     if (!emails.length) {
 
@@ -974,13 +887,11 @@ async function sendMailing() {
 
     }
 
-
     const invalid =
         emails.filter(
             email =>
                 !validEmail(email)
         );
-
 
     if (invalid.length) {
 
@@ -995,7 +906,6 @@ async function sendMailing() {
 
     }
 
-
     if (!meetingName) {
 
         status.className =
@@ -1007,7 +917,6 @@ async function sendMailing() {
         return;
 
     }
-
 
     if (!meetingDate) {
 
@@ -1021,7 +930,6 @@ async function sendMailing() {
 
     }
 
-
     if (!meetingTime) {
 
         status.className =
@@ -1034,7 +942,6 @@ async function sendMailing() {
 
     }
 
-
     if (!meetingLink) {
 
         status.className =
@@ -1046,7 +953,6 @@ async function sendMailing() {
         return;
 
     }
-
 
     try {
 
@@ -1066,14 +972,11 @@ async function sendMailing() {
 
     }
 
-
     button.disabled =
         true;
 
-
     let sent = 0;
     let failed = 0;
-
 
     for (
         let i = 0;
@@ -1084,10 +987,8 @@ async function sendMailing() {
         const email =
             emails[i];
 
-
         status.className =
             "status-info";
-
 
         status.innerHTML =
             "Отправляем " +
@@ -1098,7 +999,6 @@ async function sendMailing() {
             email +
             "</b>";
 
-
         try {
 
             await emailjs.send(
@@ -1108,7 +1008,6 @@ async function sendMailing() {
                 TEMPLATE_ID,
 
                 {
-
                     to_email:
                         email,
 
@@ -1125,11 +1024,9 @@ async function sendMailing() {
 
                     meeting_link:
                         meetingLink
-
                 }
 
             );
-
 
             sent++;
 
@@ -1146,7 +1043,6 @@ async function sendMailing() {
 
         }
 
-
         if (
             i <
             emails.length - 1
@@ -1158,10 +1054,8 @@ async function sendMailing() {
 
     }
 
-
     button.disabled =
         false;
-
 
     if (
         failed === 0
