@@ -1,71 +1,255 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Рассылка ВКС — ДОС</title>
+<title>Система рассылки ВКС — ДОС</title>
 
+<!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+
 <style>
+
 * {
     box-sizing: border-box;
 }
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
     background: #f5f3f8;
     color: #222;
 }
 
-.header {
-    background: #B69EDE;
-    padding: 25px;
-    text-align: center;
+
+/* ===== ОБЩЕЕ ===== */
+
+.hidden {
+    display: none !important;
 }
 
-.header h1 {
-    margin: 0;
+button,
+input,
+textarea {
+    font-family: inherit;
+}
+
+
+/* ===== АВТОРИЗАЦИЯ ===== */
+
+#loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 430px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 36px;
+    box-shadow: 0 15px 50px rgba(0,0,0,.10);
+}
+
+.login-logo {
+    display: block;
+    width: 100%;
+    max-width: 310px;
+    margin: 0 auto 30px;
+}
+
+.login-card h1 {
+    margin: 0 0 8px;
+    text-align: center;
     font-size: 26px;
 }
 
-.header p {
-    margin: 8px 0 0;
+.login-card .description {
+    text-align: center;
+    color: #666;
+    line-height: 1.5;
+    margin: 0 0 30px;
 }
 
+.login-field {
+    margin-bottom: 17px;
+}
+
+.login-field label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: 600;
+}
+
+.login-field input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #d5d5d5;
+    border-radius: 11px;
+    font-size: 16px;
+    outline: none;
+}
+
+.login-field input:focus {
+    border-color: #B69EDE;
+    box-shadow: 0 0 0 3px rgba(182,158,222,.15);
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 12px;
+    background: #B69EDE;
+    color: #222;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.login-button:hover {
+    opacity: .9;
+}
+
+.login-button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+#loginError {
+    display: none;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #ffe7e7;
+    color: #8a2020;
+    line-height: 1.45;
+}
+
+
+/* ===== ПАНЕЛЬ ===== */
+
+#appScreen {
+    display: none;
+}
+
+.header {
+    background: #B69EDE;
+    padding: 22px 25px;
+}
+
+.header-inner {
+    max-width: 900px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.header-title h1 {
+    margin: 0;
+    font-size: 25px;
+}
+
+.header-title p {
+    margin: 6px 0 0;
+    line-height: 1.4;
+    font-size: 14px;
+}
+
+.account {
+    text-align: right;
+    font-size: 13px;
+}
+
+#currentUser {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.logout-button {
+    background: rgba(255,255,255,.65);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 13px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.logout-button:hover {
+    background: #ffffff;
+}
+
+
+/* ===== ФОРМА РАССЫЛКИ ===== */
+
 .container {
-    max-width: 700px;
+    max-width: 760px;
     margin: 35px auto;
-    background: white;
-    padding: 30px;
+    padding: 32px;
+    background: #ffffff;
     border-radius: 20px;
     box-shadow: 0 8px 30px rgba(0,0,0,.08);
+}
+
+.container h2 {
+    margin: 0 0 7px;
+    font-size: 27px;
+}
+
+.subtitle {
+    margin: 0 0 28px;
+    color: #666;
 }
 
 .field {
     margin-bottom: 20px;
 }
 
-label {
+.field label {
     display: block;
     margin-bottom: 7px;
-    font-weight: bold;
+    font-weight: 600;
 }
 
-input,
-textarea {
+.field input,
+.field textarea {
     width: 100%;
-    padding: 13px;
-    border: 1px solid #ccc;
+    padding: 13px 14px;
+    border: 1px solid #d3d3d3;
     border-radius: 10px;
     font-size: 16px;
+    outline: none;
 }
 
-textarea {
+.field input:focus,
+.field textarea:focus {
+    border-color: #B69EDE;
+    box-shadow: 0 0 0 3px rgba(182,158,222,.12);
+}
+
+.field textarea {
     min-height: 110px;
     resize: vertical;
+}
+
+.field small {
+    display: block;
+    margin-top: 7px;
+    color: #777;
+    line-height: 1.4;
 }
 
 .row {
@@ -74,204 +258,667 @@ textarea {
 }
 
 .row .field {
-    width: 50%;
+    flex: 1;
 }
 
-button {
+.send-button {
     width: 100%;
-    padding: 15px;
     border: none;
     border-radius: 12px;
+    padding: 15px;
     background: #B69EDE;
+    color: #222;
     font-size: 17px;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
 }
 
-button:hover {
+.send-button:hover {
     opacity: .9;
 }
 
-button:disabled {
+.send-button:disabled {
     opacity: .5;
     cursor: not-allowed;
 }
 
+
+/* ===== СТАТУС ===== */
+
 #status {
     display: none;
-    margin-top: 20px;
-    padding: 15px;
+    margin-top: 18px;
+    padding: 14px;
     border-radius: 10px;
+    line-height: 1.5;
 }
 
-.success {
-    display: block !important;
-    background: #e5f8ea;
-}
-
-.error {
-    display: block !important;
-    background: #ffe5e5;
-}
-
-.info {
+.status-info {
     display: block !important;
     background: #DBF4FF;
 }
 
-.logo {
-    width: 100%;
-    max-width: 430px;
-    display: block;
-    margin: 30px auto 0;
+.status-success {
+    display: block !important;
+    background: #e4f8e9;
 }
 
-@media (max-width: 600px) {
+.status-error {
+    display: block !important;
+    background: #ffe5e5;
+}
+
+
+/* ===== ЛОГО ===== */
+
+.bottom-logo {
+    display: block;
+    width: 100%;
+    max-width: 440px;
+    height: auto;
+    margin: 35px auto 0;
+}
+
+
+/* ===== МОБИЛЬНАЯ ВЕРСИЯ ===== */
+
+@media (max-width: 650px) {
+
+    .login-card {
+        padding: 25px 20px;
+    }
+
+    .header-inner {
+        display: block;
+    }
+
+    .account {
+        text-align: left;
+        margin-top: 15px;
+    }
+
     .container {
-        margin: 15px;
-        padding: 20px;
+        margin: 18px 12px;
+        padding: 22px 18px;
     }
 
     .row {
         display: block;
     }
 
-    .row .field {
-        width: 100%;
-    }
 }
+
 </style>
 </head>
 
+
 <body>
 
-<div class="header">
-    <h1>Рассылка ВКС</h1>
 
-    <p>
-        Детский общественный совет при Уполномоченном
-        по правам ребёнка в Самарской области
-    </p>
+<!-- =====================================================
+     ЭКРАН АВТОРИЗАЦИИ
+===================================================== -->
+
+<div id="loginScreen">
+
+    <div class="login-card">
+
+        <img
+            class="login-logo"
+            src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
+            alt="Детский общественный совет"
+        >
+
+        <h1>Вход в систему</h1>
+
+        <p class="description">
+            Система рассылки Детского общественного совета
+            при Уполномоченном по правам ребёнка
+            в Самарской области
+        </p>
+
+
+        <form id="loginForm">
+
+            <div class="login-field">
+
+                <label for="loginEmail">
+                    Электронная почта
+                </label>
+
+                <input
+                    id="loginEmail"
+                    type="email"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="login-field">
+
+                <label for="loginPassword">
+                    Пароль
+                </label>
+
+                <input
+                    id="loginPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                id="loginButton"
+                class="login-button"
+                type="submit"
+            >
+                Войти
+            </button>
+
+        </form>
+
+
+        <div id="loginError"></div>
+
+    </div>
+
 </div>
 
 
-<div class="container">
 
-    <div class="field">
-        <label>Получатели</label>
+<!-- =====================================================
+     ОСНОВНАЯ ПАНЕЛЬ
+===================================================== -->
 
-        <textarea
-            id="emails"
-            placeholder="example@yandex.ru&#10;example2@mail.ru"
-        ></textarea>
-
-        <small>
-            Можно указать несколько адресов через запятую
-            или каждый адрес с новой строки.
-        </small>
-    </div>
+<div id="appScreen">
 
 
-    <div class="field">
+    <header class="header">
 
-        <label>Название ВКС</label>
+        <div class="header-inner">
 
-        <input
-            id="meetingName"
-            type="text"
-            placeholder="Например: Организационная ВКС"
-        >
+            <div class="header-title">
 
-    </div>
+                <h1>
+                    Система рассылки ВКС
+                </h1>
+
+                <p>
+                    Детский общественный совет при Уполномоченном
+                    по правам ребёнка в Самарской области
+                </p>
+
+            </div>
 
 
-    <div class="row">
+            <div class="account">
+
+                <span id="currentUser"></span>
+
+                <button
+                    class="logout-button"
+                    type="button"
+                    onclick="logout()"
+                >
+                    Выйти
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <main class="container">
+
+        <h2>
+            Создать рассылку
+        </h2>
+
+        <p class="subtitle">
+            Заполните информацию о предстоящей ВКС.
+        </p>
+
 
         <div class="field">
 
-            <label>Дата</label>
+            <label for="emails">
+                Получатели
+            </label>
 
-            <input
-                id="meetingDate"
-                type="date"
-            >
+            <textarea
+                id="emails"
+                placeholder="example@yandex.ru&#10;example2@mail.ru"
+            ></textarea>
+
+            <small>
+                Можно указать несколько адресов:
+                каждый с новой строки, через запятую или точку с запятой.
+            </small>
 
         </div>
 
 
         <div class="field">
 
-            <label>Время</label>
+            <label for="meetingName">
+                Название / тема ВКС
+            </label>
 
             <input
-                id="meetingTime"
-                type="time"
+                id="meetingName"
+                type="text"
+                placeholder="Например: Организационная ВКС"
             >
 
         </div>
 
-    </div>
+
+        <div class="row">
+
+            <div class="field">
+
+                <label for="meetingDate">
+                    Дата
+                </label>
+
+                <input
+                    id="meetingDate"
+                    type="date"
+                >
+
+            </div>
 
 
-    <div class="field">
+            <div class="field">
 
-        <label>Ссылка на ВКС</label>
+                <label for="meetingTime">
+                    Время
+                </label>
 
-        <input
-            id="meetingLink"
-            type="url"
-            placeholder="https://..."
+                <input
+                    id="meetingTime"
+                    type="time"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="meetingLink">
+                Ссылка на ВКС
+            </label>
+
+            <input
+                id="meetingLink"
+                type="url"
+                placeholder="https://..."
+            >
+
+        </div>
+
+
+        <button
+            id="sendButton"
+            class="send-button"
+            type="button"
+            onclick="sendMailing()"
+        >
+            Отправить рассылку
+        </button>
+
+
+        <div id="status"></div>
+
+
+        <img
+            class="bottom-logo"
+            src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
+            alt="Детский общественный совет"
         >
 
-    </div>
-
-
-    <button
-        id="sendButton"
-        onclick="sendMailing()"
-    >
-        Отправить рассылку
-    </button>
-
-
-    <div id="status"></div>
-
-
-    <img
-        class="logo"
-        src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
-        alt="Детский общественный совет"
-    >
+    </main>
 
 </div>
+
 
 
 <script>
 
-emailjs.init({
-    publicKey: "io1-lDIrdgcuHqN5X"
+/* =====================================================
+   FIREBASE
+===================================================== */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyAfTNjfuWGb889ZrINp_2KEwHWYywJc1E0",
+
+    authDomain:
+        "dos-mail.firebaseapp.com",
+
+    projectId:
+        "dos-mail",
+
+    storageBucket:
+        "dos-mail.firebasestorage.app",
+
+    messagingSenderId:
+        "430305221467",
+
+    appId:
+        "1:430305221467:web:09e222f4fec1b734d0187e",
+
+    measurementId:
+        "G-LPNHXMQKDR"
+};
+
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+
+/*
+    Разрешённые администраторы.
+
+    Если Firebase-пользователь создан на другой почте,
+    замени адрес ниже.
+*/
+
+const ALLOWED_EMAILS = [
+    "dos.upr.63@yandex.ru"
+];
+
+
+function isAllowedUser(user) {
+
+    if (!user || !user.email) {
+        return false;
+    }
+
+    return ALLOWED_EMAILS
+        .map(email => email.toLowerCase())
+        .includes(user.email.toLowerCase());
+
+}
+
+
+/* Сохраняем вход после обновления страницы */
+
+auth.setPersistence(
+    firebase.auth.Auth.Persistence.LOCAL
+);
+
+
+/* Следим за состоянием авторизации */
+
+auth.onAuthStateChanged(async user => {
+
+    const loginScreen =
+        document.getElementById("loginScreen");
+
+    const appScreen =
+        document.getElementById("appScreen");
+
+
+    if (user && isAllowedUser(user)) {
+
+        loginScreen.style.display = "none";
+
+        appScreen.style.display = "block";
+
+        document.getElementById(
+            "currentUser"
+        ).textContent = user.email;
+
+    }
+
+    else {
+
+        if (user) {
+            await auth.signOut();
+        }
+
+        appScreen.style.display = "none";
+
+        loginScreen.style.display = "flex";
+
+    }
+
 });
 
 
-const SERVICE_ID = "service_cjzdlke";
 
-const TEMPLATE_ID = "template_61girbl";
+/* =====================================================
+   ВХОД
+===================================================== */
+
+document
+.getElementById("loginForm")
+.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const email =
+            document
+            .getElementById("loginEmail")
+            .value
+            .trim();
+
+
+        const password =
+            document
+            .getElementById("loginPassword")
+            .value;
+
+
+        const button =
+            document.getElementById("loginButton");
+
+
+        const errorBox =
+            document.getElementById("loginError");
+
+
+        errorBox.style.display = "none";
+
+        errorBox.textContent = "";
+
+        button.disabled = true;
+
+        button.textContent = "Входим…";
+
+
+        try {
+
+            const result =
+                await auth.signInWithEmailAndPassword(
+                    email,
+                    password
+                );
+
+
+            if (
+                !isAllowedUser(
+                    result.user
+                )
+            ) {
+
+                await auth.signOut();
+
+                throw new Error(
+                    "NO_ACCESS"
+                );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+
+            let message =
+                "Не удалось войти. Проверьте электронную почту и пароль.";
+
+
+            if (
+                error.message === "NO_ACCESS"
+            ) {
+
+                message =
+                    "У этого аккаунта нет доступа к системе.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/invalid-email"
+            ) {
+
+                message =
+                    "Некорректный адрес электронной почты.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/too-many-requests"
+            ) {
+
+                message =
+                    "Слишком много попыток входа. Попробуйте позже.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/invalid-credential"
+            ) {
+
+                message =
+                    "Неверная электронная почта или пароль.";
+
+            }
+
+
+            errorBox.textContent =
+                message;
+
+            errorBox.style.display =
+                "block";
+
+        }
+
+        finally {
+
+            button.disabled = false;
+
+            button.textContent =
+                "Войти";
+
+        }
+
+    }
+);
+
+
+
+/* =====================================================
+   ВЫХОД
+===================================================== */
+
+async function logout() {
+
+    try {
+
+        await auth.signOut();
+
+        document
+            .getElementById("loginPassword")
+            .value = "";
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Ошибка выхода:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   EMAILJS
+===================================================== */
+
+emailjs.init({
+    publicKey:
+        "io1-lDIrdgcuHqN5X"
+});
+
+
+const SERVICE_ID =
+    "service_cjzdlke";
+
+
+const TEMPLATE_ID =
+    "template_61girbl";
+
 
 
 function sleep(ms) {
 
-    return new Promise(resolve =>
-        setTimeout(resolve, ms)
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
     );
 
 }
 
 
+
 function formatDate(date) {
 
-    if (!date) return "";
+    if (!date) {
+        return "";
+    }
 
-    const parts = date.split("-");
+    const parts =
+        date.split("-");
+
+
+    if (
+        parts.length !== 3
+    ) {
+
+        return date;
+
+    }
+
 
     return (
         parts[2] +
@@ -284,39 +931,109 @@ function formatDate(date) {
 }
 
 
+
+function validEmail(email) {
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(email);
+
+}
+
+
+
+/* =====================================================
+   РАССЫЛКА
+===================================================== */
+
 async function sendMailing() {
 
+
+    /*
+        Дополнительная проверка:
+        отправка возможна только для
+        вошедшего разрешённого пользователя.
+    */
+
+    const user =
+        auth.currentUser;
+
+
+    if (
+        !user ||
+        !isAllowedUser(user)
+    ) {
+
+        alert(
+            "Сессия авторизации завершена. Войдите в систему снова."
+        );
+
+        await logout();
+
+        return;
+    }
+
+
     const emailText =
-        document.getElementById("emails").value;
+        document
+        .getElementById("emails")
+        .value;
+
 
     const meetingName =
-        document.getElementById("meetingName").value.trim();
+        document
+        .getElementById("meetingName")
+        .value
+        .trim();
+
 
     const meetingDate =
-        document.getElementById("meetingDate").value;
+        document
+        .getElementById("meetingDate")
+        .value;
+
 
     const meetingTime =
-        document.getElementById("meetingTime").value;
+        document
+        .getElementById("meetingTime")
+        .value;
+
 
     const meetingLink =
-        document.getElementById("meetingLink").value.trim();
+        document
+        .getElementById("meetingLink")
+        .value
+        .trim();
+
 
     const status =
         document.getElementById("status");
+
 
     const button =
         document.getElementById("sendButton");
 
 
-    const emails = emailText
+
+    const emails =
+        emailText
         .split(/[\n,;]+/)
-        .map(email => email.trim())
-        .filter(email => email);
+        .map(
+            email =>
+                email.trim()
+        )
+        .filter(
+            email =>
+                email.length > 0
+        );
 
 
-    if (emails.length === 0) {
 
-        status.className = "error";
+    if (
+        emails.length === 0
+    ) {
+
+        status.className =
+            "status-error";
 
         status.innerHTML =
             "Укажите хотя бы одного получателя.";
@@ -326,9 +1043,35 @@ async function sendMailing() {
     }
 
 
+
+    const invalidEmails =
+        emails.filter(
+            email =>
+                !validEmail(email)
+        );
+
+
+    if (
+        invalidEmails.length > 0
+    ) {
+
+        status.className =
+            "status-error";
+
+        status.innerHTML =
+            "Проверьте адрес электронной почты:<br>" +
+            invalidEmails.join("<br>");
+
+        return;
+
+    }
+
+
+
     if (!meetingName) {
 
-        status.className = "error";
+        status.className =
+            "status-error";
 
         status.innerHTML =
             "Укажите название ВКС.";
@@ -338,33 +1081,39 @@ async function sendMailing() {
     }
 
 
+
     if (!meetingDate) {
 
-        status.className = "error";
+        status.className =
+            "status-error";
 
         status.innerHTML =
-            "Укажите дату.";
+            "Укажите дату ВКС.";
 
         return;
 
     }
+
 
 
     if (!meetingTime) {
 
-        status.className = "error";
+        status.className =
+            "status-error";
 
         status.innerHTML =
-            "Укажите время.";
+            "Укажите время ВКС.";
 
         return;
 
     }
 
 
+
     if (!meetingLink) {
 
-        status.className = "error";
+        status.className =
+            "status-error";
 
         status.innerHTML =
             "Укажите ссылку на ВКС.";
@@ -372,6 +1121,27 @@ async function sendMailing() {
         return;
 
     }
+
+
+
+    try {
+
+        new URL(meetingLink);
+
+    }
+
+    catch {
+
+        status.className =
+            "status-error";
+
+        status.innerHTML =
+            "Укажите корректную ссылку на ВКС.";
+
+        return;
+
+    }
+
 
 
     button.disabled = true;
@@ -382,34 +1152,45 @@ async function sendMailing() {
     let failed = 0;
 
 
+
     for (
         let i = 0;
         i < emails.length;
         i++
     ) {
 
-        const email = emails[i];
+
+        const email =
+            emails[i];
 
 
-        status.className = "info";
+        status.className =
+            "status-info";
+
 
         status.innerHTML =
             "Отправляем письмо " +
             (i + 1) +
             " из " +
             emails.length +
-            "<br>" +
-            email;
+            "<br><strong>" +
+            email +
+            "</strong>";
+
 
 
         try {
 
             await emailjs.send(
+
                 SERVICE_ID,
+
                 TEMPLATE_ID,
+
                 {
 
-                    to_email: email,
+                    to_email:
+                        email,
 
                     meeting_name:
                         meetingName,
@@ -426,20 +1207,34 @@ async function sendMailing() {
                         meetingLink
 
                 }
+
             );
 
 
             sent++;
 
+        }
 
-        } catch (error) {
+        catch (error) {
 
-            console.error(error);
+            console.error(
+                "Ошибка отправки:",
+                email,
+                error
+            );
+
 
             failed++;
 
         }
 
+
+
+        /*
+            Пауза между отправками,
+            чтобы не посылать запросы
+            одновременно.
+        */
 
         if (
             i <
@@ -453,33 +1248,41 @@ async function sendMailing() {
     }
 
 
+
     button.disabled = false;
 
 
-    if (failed === 0) {
+
+    if (
+        failed === 0
+    ) {
 
         status.className =
-            "success";
+            "status-success";
+
 
         status.innerHTML =
             "✅ Рассылка завершена.<br>" +
-            "Отправлено писем: <b>" +
+            "Отправлено писем: <strong>" +
             sent +
-            "</b>";
+            "</strong>";
 
-    } else {
+    }
+
+    else {
 
         status.className =
-            "error";
+            "status-error";
+
 
         status.innerHTML =
             "Рассылка завершена.<br>" +
-            "Отправлено: <b>" +
+            "Успешно отправлено: <strong>" +
             sent +
-            "</b><br>" +
-            "Ошибок: <b>" +
+            "</strong><br>" +
+            "Ошибок: <strong>" +
             failed +
-            "</b>";
+            "</strong>";
 
     }
 
