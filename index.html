@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Рассылка ВКС — ДОС</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f3f8;
+    color: #222;
+}
+
+.header {
+    background: #B69EDE;
+    padding: 25px;
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.header p {
+    margin: 8px 0 0;
+}
+
+.container {
+    max-width: 700px;
+    margin: 35px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+}
+
+.field {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: bold;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.row {
+    display: flex;
+    gap: 15px;
+}
+
+.row .field {
+    width: 50%;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #B69EDE;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: .9;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+#status {
+    display: none;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.success {
+    display: block !important;
+    background: #e5f8ea;
+}
+
+.error {
+    display: block !important;
+    background: #ffe5e5;
+}
+
+.info {
+    display: block !important;
+    background: #DBF4FF;
+}
+
+.logo {
+    width: 100%;
+    max-width: 430px;
+    display: block;
+    margin: 30px auto 0;
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin: 15px;
+        padding: 20px;
+    }
+
+    .row {
+        display: block;
+    }
+
+    .row .field {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Рассылка ВКС</h1>
+
+    <p>
+        Детский общественный совет при Уполномоченном
+        по правам ребёнка в Самарской области
+    </p>
+</div>
+
+
+<div class="container">
+
+    <div class="field">
+        <label>Получатели</label>
+
+        <textarea
+            id="emails"
+            placeholder="example@yandex.ru&#10;example2@mail.ru"
+        ></textarea>
+
+        <small>
+            Можно указать несколько адресов через запятую
+            или каждый адрес с новой строки.
+        </small>
+    </div>
+
+
+    <div class="field">
+
+        <label>Название ВКС</label>
+
+        <input
+            id="meetingName"
+            type="text"
+            placeholder="Например: Организационная ВКС"
+        >
+
+    </div>
+
+
+    <div class="row">
+
+        <div class="field">
+
+            <label>Дата</label>
+
+            <input
+                id="meetingDate"
+                type="date"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>Время</label>
+
+            <input
+                id="meetingTime"
+                type="time"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="field">
+
+        <label>Ссылка на ВКС</label>
+
+        <input
+            id="meetingLink"
+            type="url"
+            placeholder="https://..."
+        >
+
+    </div>
+
+
+    <button
+        id="sendButton"
+        onclick="sendMailing()"
+    >
+        Отправить рассылку
+    </button>
+
+
+    <div id="status"></div>
+
+
+    <img
+        class="logo"
+        src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
+        alt="Детский общественный совет"
+    >
+
+</div>
+
+
+<script>
+
+emailjs.init({
+    publicKey: "io1-lDIrdgcuHqN5X"
+});
+
+
+const SERVICE_ID = "service_cjzdlke";
+
+const TEMPLATE_ID = "template_61girbl";
+
+
+function sleep(ms) {
+
+    return new Promise(resolve =>
+        setTimeout(resolve, ms)
+    );
+
+}
+
+
+function formatDate(date) {
+
+    if (!date) return "";
+
+    const parts = date.split("-");
+
+    return (
+        parts[2] +
+        "." +
+        parts[1] +
+        "." +
+        parts[0]
+    );
+
+}
+
+
+async function sendMailing() {
+
+    const emailText =
+        document.getElementById("emails").value;
+
+    const meetingName =
+        document.getElementById("meetingName").value.trim();
+
+    const meetingDate =
+        document.getElementById("meetingDate").value;
+
+    const meetingTime =
+        document.getElementById("meetingTime").value;
+
+    const meetingLink =
+        document.getElementById("meetingLink").value.trim();
+
+    const status =
+        document.getElementById("status");
+
+    const button =
+        document.getElementById("sendButton");
+
+
+    const emails = emailText
+        .split(/[\n,;]+/)
+        .map(email => email.trim())
+        .filter(email => email);
+
+
+    if (emails.length === 0) {
+
+        status.className = "error";
+
+        status.innerHTML =
+            "Укажите хотя бы одного получателя.";
+
+        return;
+
+    }
+
+
+    if (!meetingName) {
+
+        status.className = "error";
+
+        status.innerHTML =
+            "Укажите название ВКС.";
+
+        return;
+
+    }
+
+
+    if (!meetingDate) {
+
+        status.className = "error";
+
+        status.innerHTML =
+            "Укажите дату.";
+
+        return;
+
+    }
+
+
+    if (!meetingTime) {
+
+        status.className = "error";
+
+        status.innerHTML =
+            "Укажите время.";
+
+        return;
+
+    }
+
+
+    if (!meetingLink) {
+
+        status.className = "error";
+
+        status.innerHTML =
+            "Укажите ссылку на ВКС.";
+
+        return;
+
+    }
+
+
+    button.disabled = true;
+
+
+    let sent = 0;
+
+    let failed = 0;
+
+
+    for (
+        let i = 0;
+        i < emails.length;
+        i++
+    ) {
+
+        const email = emails[i];
+
+
+        status.className = "info";
+
+        status.innerHTML =
+            "Отправляем письмо " +
+            (i + 1) +
+            " из " +
+            emails.length +
+            "<br>" +
+            email;
+
+
+        try {
+
+            await emailjs.send(
+                SERVICE_ID,
+                TEMPLATE_ID,
+                {
+
+                    to_email: email,
+
+                    meeting_name:
+                        meetingName,
+
+                    meeting_date:
+                        formatDate(
+                            meetingDate
+                        ),
+
+                    meeting_time:
+                        meetingTime,
+
+                    meeting_link:
+                        meetingLink
+
+                }
+            );
+
+
+            sent++;
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            failed++;
+
+        }
+
+
+        if (
+            i <
+            emails.length - 1
+        ) {
+
+            await sleep(1200);
+
+        }
+
+    }
+
+
+    button.disabled = false;
+
+
+    if (failed === 0) {
+
+        status.className =
+            "success";
+
+        status.innerHTML =
+            "✅ Рассылка завершена.<br>" +
+            "Отправлено писем: <b>" +
+            sent +
+            "</b>";
+
+    } else {
+
+        status.className =
+            "error";
+
+        status.innerHTML =
+            "Рассылка завершена.<br>" +
+            "Отправлено: <b>" +
+            sent +
+            "</b><br>" +
+            "Ошибок: <b>" +
+            failed +
+            "</b>";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
