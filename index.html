@@ -28,190 +28,41 @@ body {
     color: #222;
 }
 
-
-/* ===== ОБЩЕЕ ===== */
-
-.hidden {
-    display: none !important;
-}
-
-button,
-input,
-textarea {
-    font-family: inherit;
-}
-
-
-/* ===== АВТОРИЗАЦИЯ ===== */
-
 #loginScreen {
     min-height: 100vh;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     padding: 20px;
 }
 
 .login-card {
     width: 100%;
-    max-width: 430px;
-    background: #ffffff;
-    border-radius: 24px;
+    max-width: 460px;
     padding: 36px;
+    background: white;
+    border-radius: 24px;
     box-shadow: 0 15px 50px rgba(0,0,0,.10);
 }
 
-.login-logo {
+.logo {
     display: block;
     width: 100%;
-    max-width: 310px;
+    max-width: 330px;
     margin: 0 auto 30px;
 }
 
-.login-card h1 {
-    margin: 0 0 8px;
+h1 {
     text-align: center;
-    font-size: 26px;
+    margin: 0 0 10px;
+    font-size: 30px;
 }
 
-.login-card .description {
+.description {
     text-align: center;
-    color: #666;
+    color: #555;
     line-height: 1.5;
-    margin: 0 0 30px;
-}
-
-.login-field {
-    margin-bottom: 17px;
-}
-
-.login-field label {
-    display: block;
-    margin-bottom: 7px;
-    font-weight: 600;
-}
-
-.login-field input {
-    width: 100%;
-    padding: 14px;
-    border: 1px solid #d5d5d5;
-    border-radius: 11px;
-    font-size: 16px;
-    outline: none;
-}
-
-.login-field input:focus {
-    border-color: #B69EDE;
-    box-shadow: 0 0 0 3px rgba(182,158,222,.15);
-}
-
-.login-button {
-    width: 100%;
-    padding: 15px;
-    margin-top: 5px;
-    border: none;
-    border-radius: 12px;
-    background: #B69EDE;
-    color: #222;
-    font-size: 17px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.login-button:hover {
-    opacity: .9;
-}
-
-.login-button:disabled {
-    opacity: .55;
-    cursor: not-allowed;
-}
-
-#loginError {
-    display: none;
-    margin-top: 16px;
-    padding: 12px;
-    border-radius: 10px;
-    background: #ffe7e7;
-    color: #8a2020;
-    line-height: 1.45;
-}
-
-
-/* ===== ПАНЕЛЬ ===== */
-
-#appScreen {
-    display: none;
-}
-
-.header {
-    background: #B69EDE;
-    padding: 22px 25px;
-}
-
-.header-inner {
-    max-width: 900px;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.header-title h1 {
-    margin: 0;
-    font-size: 25px;
-}
-
-.header-title p {
-    margin: 6px 0 0;
-    line-height: 1.4;
-    font-size: 14px;
-}
-
-.account {
-    text-align: right;
-    font-size: 13px;
-}
-
-#currentUser {
-    display: block;
-    margin-bottom: 8px;
-}
-
-.logout-button {
-    background: rgba(255,255,255,.65);
-    border: none;
-    border-radius: 8px;
-    padding: 8px 13px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.logout-button:hover {
-    background: #ffffff;
-}
-
-
-/* ===== ФОРМА РАССЫЛКИ ===== */
-
-.container {
-    max-width: 760px;
-    margin: 35px auto;
-    padding: 32px;
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0,0,0,.08);
-}
-
-.container h2 {
-    margin: 0 0 7px;
-    font-size: 27px;
-}
-
-.subtitle {
-    margin: 0 0 28px;
-    color: #666;
+    margin-bottom: 30px;
 }
 
 .field {
@@ -220,16 +71,16 @@ textarea {
 
 .field label {
     display: block;
-    margin-bottom: 7px;
-    font-weight: 600;
+    margin-bottom: 8px;
+    font-weight: 700;
 }
 
 .field input,
 .field textarea {
     width: 100%;
-    padding: 13px 14px;
-    border: 1px solid #d3d3d3;
-    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid #d5d5d5;
+    border-radius: 12px;
     font-size: 16px;
     outline: none;
 }
@@ -237,7 +88,7 @@ textarea {
 .field input:focus,
 .field textarea:focus {
     border-color: #B69EDE;
-    box-shadow: 0 0 0 3px rgba(182,158,222,.12);
+    box-shadow: 0 0 0 3px rgba(182,158,222,.15);
 }
 
 .field textarea {
@@ -249,7 +100,90 @@ textarea {
     display: block;
     margin-top: 7px;
     color: #777;
-    line-height: 1.4;
+}
+
+.main-button {
+    width: 100%;
+    padding: 15px;
+    border: 0;
+    border-radius: 12px;
+    background: #B69EDE;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.main-button:hover {
+    opacity: .9;
+}
+
+.main-button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+#loginError {
+    display: none;
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 12px;
+    background: #ffe5e5;
+    color: #8a2020;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+#appScreen {
+    display: none;
+}
+
+.header {
+    background: #B69EDE;
+    padding: 22px;
+}
+
+.header-inner {
+    max-width: 900px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.header h2 {
+    margin: 0;
+}
+
+.header p {
+    margin: 5px 0 0;
+}
+
+.account {
+    text-align: right;
+}
+
+.logout {
+    margin-top: 8px;
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(255,255,255,.7);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 760px;
+    margin: 35px auto;
+    padding: 32px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+}
+
+.container h2 {
+    margin-top: 0;
 }
 
 .row {
@@ -261,33 +195,9 @@ textarea {
     flex: 1;
 }
 
-.send-button {
-    width: 100%;
-    border: none;
-    border-radius: 12px;
-    padding: 15px;
-    background: #B69EDE;
-    color: #222;
-    font-size: 17px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.send-button:hover {
-    opacity: .9;
-}
-
-.send-button:disabled {
-    opacity: .5;
-    cursor: not-allowed;
-}
-
-
-/* ===== СТАТУС ===== */
-
 #status {
     display: none;
-    margin-top: 18px;
+    margin-top: 20px;
     padding: 14px;
     border-radius: 10px;
     line-height: 1.5;
@@ -308,24 +218,26 @@ textarea {
     background: #ffe5e5;
 }
 
-
-/* ===== ЛОГО ===== */
-
 .bottom-logo {
     display: block;
     width: 100%;
     max-width: 440px;
-    height: auto;
     margin: 35px auto 0;
 }
 
-
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ ===== */
-
-@media (max-width: 650px) {
+@media(max-width:650px) {
 
     .login-card {
         padding: 25px 20px;
+    }
+
+    .container {
+        margin: 15px;
+        padding: 22px 18px;
+    }
+
+    .row {
+        display: block;
     }
 
     .header-inner {
@@ -336,16 +248,6 @@ textarea {
         text-align: left;
         margin-top: 15px;
     }
-
-    .container {
-        margin: 18px 12px;
-        padding: 22px 18px;
-    }
-
-    .row {
-        display: block;
-    }
-
 }
 
 </style>
@@ -355,18 +257,16 @@ textarea {
 <body>
 
 
-<!-- =====================================================
-     ЭКРАН АВТОРИЗАЦИИ
-===================================================== -->
+<!-- ВХОД -->
 
 <div id="loginScreen">
 
     <div class="login-card">
 
         <img
-            class="login-logo"
+            class="logo"
             src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
-            alt="Детский общественный совет"
+            alt="ДОС"
         >
 
         <h1>Вход в систему</h1>
@@ -380,7 +280,7 @@ textarea {
 
         <form id="loginForm">
 
-            <div class="login-field">
+            <div class="field">
 
                 <label for="loginEmail">
                     Электронная почта
@@ -390,13 +290,14 @@ textarea {
                     id="loginEmail"
                     type="email"
                     autocomplete="username"
+                    value="dos.upr.63@yandex.ru"
                     required
                 >
 
             </div>
 
 
-            <div class="login-field">
+            <div class="field">
 
                 <label for="loginPassword">
                     Пароль
@@ -414,7 +315,7 @@ textarea {
 
             <button
                 id="loginButton"
-                class="login-button"
+                class="main-button"
                 type="submit"
             >
                 Войти
@@ -431,163 +332,153 @@ textarea {
 
 
 
-<!-- =====================================================
-     ОСНОВНАЯ ПАНЕЛЬ
-===================================================== -->
+<!-- ПАНЕЛЬ РАССЫЛКИ -->
 
 <div id="appScreen">
 
+<header class="header">
 
-    <header class="header">
+    <div class="header-inner">
 
-        <div class="header-inner">
+        <div>
 
-            <div class="header-title">
+            <h2>Система рассылки ВКС</h2>
 
-                <h1>
-                    Система рассылки ВКС
-                </h1>
-
-                <p>
-                    Детский общественный совет при Уполномоченном
-                    по правам ребёнка в Самарской области
-                </p>
-
-            </div>
-
-
-            <div class="account">
-
-                <span id="currentUser"></span>
-
-                <button
-                    class="logout-button"
-                    type="button"
-                    onclick="logout()"
-                >
-                    Выйти
-                </button>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-
-    <main class="container">
-
-        <h2>
-            Создать рассылку
-        </h2>
-
-        <p class="subtitle">
-            Заполните информацию о предстоящей ВКС.
-        </p>
-
-
-        <div class="field">
-
-            <label for="emails">
-                Получатели
-            </label>
-
-            <textarea
-                id="emails"
-                placeholder="example@yandex.ru&#10;example2@mail.ru"
-            ></textarea>
-
-            <small>
-                Можно указать несколько адресов:
-                каждый с новой строки, через запятую или точку с запятой.
-            </small>
+            <p>
+                Детский общественный совет при Уполномоченном
+                по правам ребёнка в Самарской области
+            </p>
 
         </div>
 
 
+        <div class="account">
+
+            <div id="currentUser"></div>
+
+            <button
+                class="logout"
+                onclick="logout()"
+            >
+                Выйти
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <h2>Создать рассылку</h2>
+
+    <p>
+        Заполните информацию о предстоящей ВКС.
+    </p>
+
+
+    <div class="field">
+
+        <label for="emails">
+            Получатели
+        </label>
+
+        <textarea
+            id="emails"
+            placeholder="example@yandex.ru&#10;example2@mail.ru"
+        ></textarea>
+
+        <small>
+            Адреса можно вводить с новой строки,
+            через запятую или точку с запятой.
+        </small>
+
+    </div>
+
+
+    <div class="field">
+
+        <label for="meetingName">
+            Название ВКС
+        </label>
+
+        <input
+            id="meetingName"
+            type="text"
+            placeholder="Организационная ВКС"
+        >
+
+    </div>
+
+
+    <div class="row">
+
         <div class="field">
 
-            <label for="meetingName">
-                Название / тема ВКС
+            <label for="meetingDate">
+                Дата
             </label>
 
             <input
-                id="meetingName"
-                type="text"
-                placeholder="Например: Организационная ВКС"
+                id="meetingDate"
+                type="date"
             >
 
         </div>
 
 
-        <div class="row">
-
-            <div class="field">
-
-                <label for="meetingDate">
-                    Дата
-                </label>
-
-                <input
-                    id="meetingDate"
-                    type="date"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="meetingTime">
-                    Время
-                </label>
-
-                <input
-                    id="meetingTime"
-                    type="time"
-                >
-
-            </div>
-
-        </div>
-
-
         <div class="field">
 
-            <label for="meetingLink">
-                Ссылка на ВКС
+            <label for="meetingTime">
+                Время
             </label>
 
             <input
-                id="meetingLink"
-                type="url"
-                placeholder="https://..."
+                id="meetingTime"
+                type="time"
             >
 
         </div>
 
-
-        <button
-            id="sendButton"
-            class="send-button"
-            type="button"
-            onclick="sendMailing()"
-        >
-            Отправить рассылку
-        </button>
+    </div>
 
 
-        <div id="status"></div>
+    <div class="field">
 
+        <label for="meetingLink">
+            Ссылка на ВКС
+        </label>
 
-        <img
-            class="bottom-logo"
-            src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
-            alt="Детский общественный совет"
+        <input
+            id="meetingLink"
+            type="url"
+            placeholder="https://..."
         >
 
-    </main>
+    </div>
+
+
+    <button
+        id="sendButton"
+        class="main-button"
+        onclick="sendMailing()"
+    >
+        Отправить рассылку
+    </button>
+
+
+    <div id="status"></div>
+
+
+    <img
+        class="bottom-logo"
+        src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
+        alt="ДОС"
+    >
+
+</main>
 
 </div>
 
@@ -595,9 +486,9 @@ textarea {
 
 <script>
 
-/* =====================================================
+/* =========================
    FIREBASE
-===================================================== */
+========================= */
 
 const firebaseConfig = {
 
@@ -629,13 +520,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
 
-/*
-    Разрешённые администраторы.
-
-    Если Firebase-пользователь создан на другой почте,
-    замени адрес ниже.
-*/
-
 const ALLOWED_EMAILS = [
     "dos.upr.63@yandex.ru"
 ];
@@ -648,20 +532,21 @@ function isAllowedUser(user) {
     }
 
     return ALLOWED_EMAILS
-        .map(email => email.toLowerCase())
-        .includes(user.email.toLowerCase());
-
+        .map(x => x.toLowerCase())
+        .includes(
+            user.email.toLowerCase()
+        );
 }
 
 
-/* Сохраняем вход после обновления страницы */
+/* Сохраняем вход */
 
 auth.setPersistence(
     firebase.auth.Auth.Persistence.LOCAL
 );
 
 
-/* Следим за состоянием авторизации */
+/* Проверяем состояние входа */
 
 auth.onAuthStateChanged(async user => {
 
@@ -672,15 +557,21 @@ auth.onAuthStateChanged(async user => {
         document.getElementById("appScreen");
 
 
-    if (user && isAllowedUser(user)) {
+    if (
+        user &&
+        isAllowedUser(user)
+    ) {
 
-        loginScreen.style.display = "none";
+        loginScreen.style.display =
+            "none";
 
-        appScreen.style.display = "block";
+        appScreen.style.display =
+            "block";
 
         document.getElementById(
             "currentUser"
-        ).textContent = user.email;
+        ).textContent =
+            user.email;
 
     }
 
@@ -690,9 +581,11 @@ auth.onAuthStateChanged(async user => {
             await auth.signOut();
         }
 
-        appScreen.style.display = "none";
+        appScreen.style.display =
+            "none";
 
-        loginScreen.style.display = "flex";
+        loginScreen.style.display =
+            "flex";
 
     }
 
@@ -700,15 +593,15 @@ auth.onAuthStateChanged(async user => {
 
 
 
-/* =====================================================
+/* =========================
    ВХОД
-===================================================== */
+========================= */
 
 document
 .getElementById("loginForm")
 .addEventListener(
     "submit",
-    async function(event) {
+    async event => {
 
         event.preventDefault();
 
@@ -717,7 +610,8 @@ document
             document
             .getElementById("loginEmail")
             .value
-            .trim();
+            .trim()
+            .toLowerCase();
 
 
         const password =
@@ -727,26 +621,33 @@ document
 
 
         const button =
-            document.getElementById("loginButton");
+            document
+            .getElementById("loginButton");
 
 
         const errorBox =
-            document.getElementById("loginError");
+            document
+            .getElementById("loginError");
 
 
-        errorBox.style.display = "none";
+        errorBox.style.display =
+            "none";
 
-        errorBox.textContent = "";
+        errorBox.textContent =
+            "";
 
-        button.disabled = true;
+        button.disabled =
+            true;
 
-        button.textContent = "Входим…";
+        button.textContent =
+            "Проверяем…";
 
 
         try {
 
             const result =
-                await auth.signInWithEmailAndPassword(
+                await auth
+                .signInWithEmailAndPassword(
                     email,
                     password
                 );
@@ -760,9 +661,12 @@ document
 
                 await auth.signOut();
 
-                throw new Error(
-                    "NO_ACCESS"
-                );
+                throw {
+                    code:
+                        "auth/no-access",
+                    message:
+                        "У этого аккаунта нет доступа."
+                };
 
             }
 
@@ -770,19 +674,43 @@ document
 
         catch (error) {
 
-            console.error(error);
+            console.error(
+                "Firebase login error:",
+                error
+            );
 
 
-            let message =
-                "Не удалось войти. Проверьте электронную почту и пароль.";
+            let explanation =
+                "Не удалось выполнить вход.";
 
 
             if (
-                error.message === "NO_ACCESS"
+                error.code ===
+                "auth/invalid-credential"
             ) {
 
-                message =
-                    "У этого аккаунта нет доступа к системе.";
+                explanation =
+                    "Firebase не принял электронную почту или пароль.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/wrong-password"
+            ) {
+
+                explanation =
+                    "Указан неправильный пароль.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/user-not-found"
+            ) {
+
+                explanation =
+                    "Такого пользователя нет в Firebase.";
 
             }
 
@@ -791,8 +719,38 @@ document
                 "auth/invalid-email"
             ) {
 
-                message =
+                explanation =
                     "Некорректный адрес электронной почты.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/unauthorized-domain"
+            ) {
+
+                explanation =
+                    "Домен GitHub Pages не разрешён в Firebase.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/api-key-not-valid"
+            ) {
+
+                explanation =
+                    "Ошибка Firebase API Key.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/network-request-failed"
+            ) {
+
+                explanation =
+                    "Не удалось связаться с Firebase. Проверьте интернет.";
 
             }
 
@@ -801,24 +759,30 @@ document
                 "auth/too-many-requests"
             ) {
 
-                message =
-                    "Слишком много попыток входа. Попробуйте позже.";
+                explanation =
+                    "Слишком много попыток входа. Firebase временно ограничил вход.";
 
             }
 
             else if (
                 error.code ===
-                "auth/invalid-credential"
+                "auth/no-access"
             ) {
 
-                message =
-                    "Неверная электронная почта или пароль.";
+                explanation =
+                    "Этот пользователь не разрешён для входа в систему.";
 
             }
 
 
             errorBox.textContent =
-                message;
+                explanation +
+                "\n\nКод ошибки: " +
+                (
+                    error.code ||
+                    "неизвестная ошибка"
+                );
+
 
             errorBox.style.display =
                 "block";
@@ -827,7 +791,8 @@ document
 
         finally {
 
-            button.disabled = false;
+            button.disabled =
+                false;
 
             button.textContent =
                 "Войти";
@@ -839,42 +804,33 @@ document
 
 
 
-/* =====================================================
+/* =========================
    ВЫХОД
-===================================================== */
+========================= */
 
 async function logout() {
 
-    try {
+    await auth.signOut();
 
-        await auth.signOut();
-
-        document
-            .getElementById("loginPassword")
-            .value = "";
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Ошибка выхода:",
-            error
-        );
-
-    }
+    document
+        .getElementById(
+            "loginPassword"
+        )
+        .value = "";
 
 }
 
 
 
-/* =====================================================
+/* =========================
    EMAILJS
-===================================================== */
+========================= */
 
 emailjs.init({
+
     publicKey:
         "io1-lDIrdgcuHqN5X"
+
 });
 
 
@@ -910,16 +866,6 @@ function formatDate(date) {
     const parts =
         date.split("-");
 
-
-    if (
-        parts.length !== 3
-    ) {
-
-        return date;
-
-    }
-
-
     return (
         parts[2] +
         "." +
@@ -941,18 +887,11 @@ function validEmail(email) {
 
 
 
-/* =====================================================
-   РАССЫЛКА
-===================================================== */
+/* =========================
+   ОТПРАВКА
+========================= */
 
 async function sendMailing() {
-
-
-    /*
-        Дополнительная проверка:
-        отправка возможна только для
-        вошедшего разрешённого пользователя.
-    */
 
     const user =
         auth.currentUser;
@@ -964,12 +903,13 @@ async function sendMailing() {
     ) {
 
         alert(
-            "Сессия авторизации завершена. Войдите в систему снова."
+            "Сессия завершена. Войдите снова."
         );
 
         await logout();
 
         return;
+
     }
 
 
@@ -1013,29 +953,21 @@ async function sendMailing() {
         document.getElementById("sendButton");
 
 
-
     const emails =
         emailText
         .split(/[\n,;]+/)
         .map(
-            email =>
-                email.trim()
+            x => x.trim()
         )
-        .filter(
-            email =>
-                email.length > 0
-        );
+        .filter(Boolean);
 
 
-
-    if (
-        emails.length === 0
-    ) {
+    if (!emails.length) {
 
         status.className =
             "status-error";
 
-        status.innerHTML =
+        status.textContent =
             "Укажите хотя бы одного получателя.";
 
         return;
@@ -1043,29 +975,25 @@ async function sendMailing() {
     }
 
 
-
-    const invalidEmails =
+    const invalid =
         emails.filter(
             email =>
                 !validEmail(email)
         );
 
 
-    if (
-        invalidEmails.length > 0
-    ) {
+    if (invalid.length) {
 
         status.className =
             "status-error";
 
         status.innerHTML =
-            "Проверьте адрес электронной почты:<br>" +
-            invalidEmails.join("<br>");
+            "Проверьте адреса:<br>" +
+            invalid.join("<br>");
 
         return;
 
     }
-
 
 
     if (!meetingName) {
@@ -1073,7 +1001,7 @@ async function sendMailing() {
         status.className =
             "status-error";
 
-        status.innerHTML =
+        status.textContent =
             "Укажите название ВКС.";
 
         return;
@@ -1081,19 +1009,17 @@ async function sendMailing() {
     }
 
 
-
     if (!meetingDate) {
 
         status.className =
             "status-error";
 
-        status.innerHTML =
-            "Укажите дату ВКС.";
+        status.textContent =
+            "Укажите дату.";
 
         return;
 
     }
-
 
 
     if (!meetingTime) {
@@ -1101,13 +1027,12 @@ async function sendMailing() {
         status.className =
             "status-error";
 
-        status.innerHTML =
-            "Укажите время ВКС.";
+        status.textContent =
+            "Укажите время.";
 
         return;
 
     }
-
 
 
     if (!meetingLink) {
@@ -1115,13 +1040,12 @@ async function sendMailing() {
         status.className =
             "status-error";
 
-        status.innerHTML =
+        status.textContent =
             "Укажите ссылку на ВКС.";
 
         return;
 
     }
-
 
 
     try {
@@ -1135,22 +1059,20 @@ async function sendMailing() {
         status.className =
             "status-error";
 
-        status.innerHTML =
-            "Укажите корректную ссылку на ВКС.";
+        status.textContent =
+            "Укажите корректную ссылку.";
 
         return;
 
     }
 
 
-
-    button.disabled = true;
+    button.disabled =
+        true;
 
 
     let sent = 0;
-
     let failed = 0;
-
 
 
     for (
@@ -1158,7 +1080,6 @@ async function sendMailing() {
         i < emails.length;
         i++
     ) {
-
 
         const email =
             emails[i];
@@ -1169,14 +1090,13 @@ async function sendMailing() {
 
 
         status.innerHTML =
-            "Отправляем письмо " +
+            "Отправляем " +
             (i + 1) +
             " из " +
             emails.length +
-            "<br><strong>" +
+            "<br><b>" +
             email +
-            "</strong>";
-
+            "</b>";
 
 
         try {
@@ -1218,23 +1138,14 @@ async function sendMailing() {
         catch (error) {
 
             console.error(
-                "Ошибка отправки:",
-                email,
+                "EmailJS:",
                 error
             );
-
 
             failed++;
 
         }
 
-
-
-        /*
-            Пауза между отправками,
-            чтобы не посылать запросы
-            одновременно.
-        */
 
         if (
             i <
@@ -1248,9 +1159,8 @@ async function sendMailing() {
     }
 
 
-
-    button.disabled = false;
-
+    button.disabled =
+        false;
 
 
     if (
@@ -1260,12 +1170,11 @@ async function sendMailing() {
         status.className =
             "status-success";
 
-
         status.innerHTML =
             "✅ Рассылка завершена.<br>" +
-            "Отправлено писем: <strong>" +
+            "Отправлено писем: <b>" +
             sent +
-            "</strong>";
+            "</b>";
 
     }
 
@@ -1274,15 +1183,14 @@ async function sendMailing() {
         status.className =
             "status-error";
 
-
         status.innerHTML =
             "Рассылка завершена.<br>" +
-            "Успешно отправлено: <strong>" +
+            "Отправлено: <b>" +
             sent +
-            "</strong><br>" +
-            "Ошибок: <strong>" +
+            "</b><br>" +
+            "Ошибок: <b>" +
             failed +
-            "</strong>";
+            "</b>";
 
     }
 
