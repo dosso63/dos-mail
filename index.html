@@ -3,2325 +3,548 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Система ДОС</title>
 
-<title>Система рассылки ВКС — ДОС</title>
-
-<!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 <style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f6f4f8;
-    color: #222;
-}
-
-button,
-input,
-select,
-textarea {
-    font-family: inherit;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* =========================
-   LOGIN
-========================= */
-
-#loginScreen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.login-card {
-    width: 100%;
-    max-width: 460px;
-    background: #fff;
-    border-radius: 24px;
-    padding: 35px;
-    box-shadow: 0 15px 50px rgba(0,0,0,.1);
-}
-
-.login-logo {
-    display: block;
-    width: 100%;
-    max-width: 330px;
-    margin: 0 auto 28px;
-}
-
-.login-card h1 {
-    text-align: center;
-    margin: 0 0 10px;
-}
-
-.login-description {
-    text-align: center;
-    color: #666;
-    line-height: 1.5;
-    margin-bottom: 28px;
-}
-
-/* =========================
-   INPUTS
-========================= */
-
-.field {
-    margin-bottom: 18px;
-}
-
-.field label {
-    display: block;
-    margin-bottom: 7px;
-    font-weight: 700;
-}
-
-.field input,
-.field select,
-.field textarea {
-    width: 100%;
-    border: 1px solid #d8d8d8;
-    border-radius: 11px;
-    padding: 13px 14px;
-    font-size: 16px;
-    outline: none;
-    background: #fff;
-}
-
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-    border-color: #B69EDE;
-    box-shadow: 0 0 0 3px rgba(182,158,222,.15);
-}
-
-.field small {
-    display: block;
-    margin-top: 6px;
-    color: #777;
-}
-
-.row {
-    display: flex;
-    gap: 14px;
-}
-
-.row .field {
-    flex: 1;
-}
-
-/* =========================
-   BUTTONS
-========================= */
-
-.primary-button {
-    border: none;
-    border-radius: 11px;
-    padding: 13px 18px;
-    background: #B69EDE;
-    color: #222;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.primary-button:hover {
-    opacity: .9;
-}
-
-.primary-button:disabled {
-    opacity: .5;
-    cursor: not-allowed;
-}
-
-.full-button {
-    width: 100%;
-}
-
-.secondary-button {
-    border: none;
-    border-radius: 9px;
-    padding: 9px 13px;
-    background: #DBF4FF;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.danger-button {
-    border: none;
-    border-radius: 9px;
-    padding: 9px 13px;
-    background: #ffe2e2;
-    color: #8a2020;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-/* =========================
-   HEADER
-========================= */
-
-#appScreen {
-    display: none;
-}
-
-.header {
-    background: #B69EDE;
-    padding: 20px 24px;
-}
-
-.header-inner {
-    max-width: 1050px;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 24px;
-}
-
-.header p {
-    margin: 5px 0 0;
-    font-size: 14px;
-}
-
-.account-box {
-    text-align: right;
-    font-size: 13px;
-}
-
-.logout-button {
-    margin-top: 7px;
-    border: 0;
-    border-radius: 8px;
-    padding: 8px 13px;
-    background: rgba(255,255,255,.7);
-    cursor: pointer;
-    font-weight: 600;
-}
-
-/* =========================
-   LAYOUT
-========================= */
-
-.page {
-    max-width: 1050px;
-    margin: 30px auto;
-    padding: 0 15px 50px;
-}
-
-.card {
-    background: #fff;
-    border-radius: 18px;
-    padding: 25px;
-    box-shadow: 0 7px 28px rgba(0,0,0,.06);
-    margin-bottom: 22px;
-}
-
-.card h2 {
-    margin: 0 0 7px;
-}
-
-.card-subtitle {
-    margin: 0 0 22px;
-    color: #666;
-}
-
-/* =========================
-   CONTACT CONTROLS
-========================= */
-
-.contacts-toolbar {
-    display: grid;
-    grid-template-columns: 1fr 220px;
-    gap: 12px;
-    margin-bottom: 15px;
-}
-
-.contacts-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 9px;
-    margin-bottom: 18px;
-}
-
-.contact-form {
-    background: #faf8fc;
-    border: 1px solid #eee8f5;
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 20px;
-}
-
-.contact-form-title {
-    font-weight: 700;
-    margin-bottom: 14px;
-}
-
-/* =========================
-   CONTACT LIST
-========================= */
-
-.contact-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.contact-item {
-    border: 1px solid #e7e7e7;
-    border-radius: 13px;
-    padding: 14px;
-    display: grid;
-    grid-template-columns: 34px 1fr auto;
-    align-items: center;
-    gap: 12px;
-}
-
-.contact-item:hover {
-    border-color: #B69EDE;
-}
-
-.contact-check {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
-.contact-name {
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-
-.contact-email {
-    font-size: 14px;
-    color: #555;
-}
-
-.contact-department {
-    display: inline-block;
-    margin-top: 6px;
-    padding: 4px 8px;
-    border-radius: 8px;
-    background: #f1ebfa;
-    font-size: 12px;
-}
-
-.contact-buttons {
-    display: flex;
-    gap: 7px;
-}
-
-.contact-buttons button {
-    padding: 7px 10px;
-    font-size: 13px;
-}
-
-.no-contacts {
-    padding: 25px;
-    text-align: center;
-    color: #777;
-    background: #fafafa;
-    border-radius: 12px;
-}
-
-.selected-info {
-    background: #DBF4FF;
-    border-radius: 10px;
-    padding: 11px 13px;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-/* =========================
-   STATUS
-========================= */
-
-.status-box {
-    display: none;
-    margin-top: 17px;
-    padding: 13px;
-    border-radius: 10px;
-    line-height: 1.5;
-}
-
-.status-info {
-    display: block;
-    background: #DBF4FF;
-}
-
-.status-success {
-    display: block;
-    background: #e4f7e9;
-}
-
-.status-error {
-    display: block;
-    background: #ffe5e5;
-    color: #7c2020;
-}
-
-#loginError {
-    display: none;
-    margin-top: 16px;
-    padding: 13px;
-    border-radius: 10px;
-    background: #ffe5e5;
-    color: #7c2020;
-    white-space: pre-line;
-}
-
-/* =========================
-   LOGO
-========================= */
-
-.bottom-logo {
-    width: 100%;
-    max-width: 430px;
-    display: block;
-    margin: 30px auto 0;
-}
-
-/* =========================
-   MODAL
-========================= */
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.4);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 1000;
-}
-
-.modal.show {
-    display: flex;
-}
-
-.modal-card {
-    background: #fff;
-    border-radius: 18px;
-    padding: 24px;
-    width: 100%;
-    max-width: 480px;
-}
-
-.modal-card h3 {
-    margin-top: 0;
-}
-
-.modal-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.modal-actions button {
-    flex: 1;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media(max-width:700px) {
-    .header-inner {
-        display: block;
-    }
-
-    .account-box {
-        text-align: left;
-        margin-top: 15px;
-    }
-
-    .row {
-        display: block;
-    }
-
-    .contacts-toolbar {
-        grid-template-columns: 1fr;
-    }
-
-    .contact-item {
-        grid-template-columns: 30px 1fr;
-    }
-
-    .contact-buttons {
-        grid-column: 2;
-        margin-top: 8px;
-    }
-
-    .card {
-        padding: 19px;
-    }
-}
+:root{--violet:#B69EDE;--blue:#DBF4FF;--bg:#f5f6f8;--panel:#fff;--text:#20242b;--muted:#6b7280;--border:#e5e7eb;--danger:#b42318;--success:#147a3f;--sidebar:#20242b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{width:min(460px,100%);background:#fff;border-radius:24px;padding:34px;box-shadow:0 16px 48px rgba(0,0,0,.10)}
+.login-logo{display:block;width:min(340px,100%);margin:0 auto 26px}
+.login-card h1{text-align:center;margin:0 0 8px}.login-card p{text-align:center;color:var(--muted);line-height:1.5}
+.field{margin:0 0 16px}.field label{display:block;font-weight:700;margin-bottom:7px}
+.field input,.field textarea,.field select,.search-input{width:100%;border:1px solid #d6dae0;border-radius:11px;padding:12px 13px;background:#fff;outline:none}
+.field textarea{min-height:170px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus,.search-input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(182,158,222,.18)}
+.primary,.secondary,.danger,.ghost{border:0;border-radius:10px;padding:11px 15px;font-weight:700}
+.primary{background:var(--violet)}.secondary{background:var(--blue)}.ghost{background:#eef0f3}.danger{background:#fee4e2;color:#9f1c13}.full{width:100%}
+.status{display:none;margin-top:14px;padding:12px;border-radius:10px;line-height:1.45}.status.info{display:block;background:var(--blue)}.status.success{display:block;background:#e8f7ee;color:var(--success)}.status.error{display:block;background:#feecec;color:var(--danger);white-space:pre-line}
+.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+.sidebar{background:var(--sidebar);color:#fff;min-height:100vh;padding:18px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;padding:7px 8px 20px}.brand img{width:42px;height:42px;border-radius:50%;background:#fff}.brand strong{font-size:16px}
+.nav{display:flex;flex-direction:column;gap:6px}.nav-btn{border:0;background:transparent;color:#d8dde5;text-align:left;padding:11px 12px;border-radius:10px;font-weight:700}.nav-btn:hover,.nav-btn.active{background:rgba(182,158,222,.22);color:#fff}.nav-btn .ico{display:inline-block;width:28px}
+.sidebar-bottom{position:absolute;bottom:18px;left:14px;right:14px}.user-mini{font-size:12px;color:#bbc1cb;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:8px}
+.main{min-width:0}.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5}.topbar h1{margin:0;font-size:22px}.topbar .sub{font-size:13px;color:var(--muted);margin-top:3px}.hamburger{display:none;border:0;background:#eef0f3;border-radius:9px;padding:8px 10px;font-size:20px}
+.content{padding:24px;max-width:1180px;margin:auto}.page{display:none}.page.active{display:block}
+.grid-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.metric{background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px}.metric .value{font-size:30px;font-weight:800;margin-top:8px}
+.card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:22px;margin-top:18px;box-shadow:0 4px 16px rgba(0,0,0,.03)}.card h2{margin:0 0 6px}.muted{color:var(--muted)}.quick{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+.two-col{display:grid;grid-template-columns:1fr 340px;gap:18px}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.picker-toolbar{display:grid;grid-template-columns:1fr 220px;gap:10px;margin-bottom:10px}.picker-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.contact-picker{border:1px solid var(--border);border-radius:13px;max-height:310px;overflow:auto}.pick-item{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;padding:12px;border-bottom:1px solid #f0f1f3}.pick-item:last-child{border-bottom:0}.pick-name{font-weight:700}.pick-meta{font-size:13px;color:var(--muted);margin-top:2px}.badge{display:inline-block;font-size:12px;background:#f0eafb;padding:3px 7px;border-radius:999px;margin-top:5px}.selected-count{font-weight:700;margin:10px 0}
+.calendar{background:#fff;border:1px solid var(--border);border-radius:16px;padding:15px}.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.cal-head button{border:0;background:#eef0f3;border-radius:8px;padding:7px 10px}.cal-title{font-weight:800;text-transform:capitalize}.cal-week,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.cal-week div{text-align:center;font-size:12px;color:var(--muted);padding:5px 0}.day{border:0;background:#f7f8fa;border-radius:9px;aspect-ratio:1;display:flex;align-items:center;justify-content:center}.day:hover{background:#ece5f8}.day.today{outline:2px solid var(--violet);font-weight:800}.day.selected{background:var(--violet);font-weight:800}.day.empty{background:transparent;pointer-events:none}.today-card{margin-top:12px;background:var(--blue);border-radius:12px;padding:12px;font-size:14px}
+.contacts-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.contacts-list{margin-top:14px;border:1px solid var(--border);border-radius:13px;overflow:hidden}.contact-row{display:grid;grid-template-columns:1.5fr 1.2fr 1fr auto;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border)}.contact-row:last-child{border-bottom:0}.contact-row strong{display:block}.contact-row .mail{color:var(--muted);font-size:14px}.actions{display:flex;gap:6px}.small{padding:7px 9px;font-size:12px}
+.history-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}.history-item{border:1px solid var(--border);border-radius:13px;padding:14px;display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:start}.history-type{font-weight:800}.history-title{font-weight:700}.history-meta{font-size:13px;color:var(--muted);margin-top:5px}
+.template-card{border:1px solid var(--border);border-radius:14px;padding:16px;margin-top:12px}.template-card strong{display:block;margin-bottom:6px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show{display:flex}.modal-card{background:#fff;border-radius:18px;padding:22px;width:min(500px,100%)}.modal-card h3{margin-top:0}.modal-actions{display:flex;gap:10px}.modal-actions>*{flex:1}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:-270px;top:0;width:250px;z-index:15;transition:.2s}.sidebar.open{left:0}.hamburger{display:block}.grid-cards{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.contact-row{grid-template-columns:1fr}.history-item{grid-template-columns:1fr}}
+@media(max-width:600px){.content{padding:14px}.topbar{padding:14px}.grid-cards{grid-template-columns:1fr}.row,.picker-toolbar{grid-template-columns:1fr}.card{padding:16px}}
 </style>
 </head>
-
 <body>
 
-<!-- =========================
-     LOGIN
-========================= -->
-
-<div id="loginScreen">
-
-    <div class="login-card">
-
-        <img
-            class="login-logo"
-            src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
-            alt="ДОС"
-        >
-
-        <h1>Вход в систему</h1>
-
-        <p class="login-description">
-            Система рассылки Детского общественного совета
-            при Уполномоченном по правам ребёнка
-            в Самарской области
-        </p>
-
-        <form id="loginForm">
-
-            <div class="field">
-                <label>Электронная почта</label>
-
-                <input
-                    id="loginEmail"
-                    type="email"
-                    value="dos.upr.63@yandex.ru"
-                    autocomplete="username"
-                    required
-                >
-            </div>
-
-            <div class="field">
-                <label>Пароль</label>
-
-                <input
-                    id="loginPassword"
-                    type="password"
-                    autocomplete="current-password"
-                    required
-                >
-            </div>
-
-            <button
-                id="loginButton"
-                class="primary-button full-button"
-                type="submit"
-            >
-                Войти
-            </button>
-
-        </form>
-
-        <div id="loginError"></div>
-
-    </div>
-
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <img class="login-logo" src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp" alt="ДОС">
+    <h1>Вход в систему</h1>
+    <p>Внутренняя система Детского общественного совета при Уполномоченном по правам ребёнка в Самарской области</p>
+    <form id="loginForm">
+      <div class="field"><label>Электронная почта</label><input id="loginEmail" type="email" value="dos.upr.63@yandex.ru" autocomplete="username" required></div>
+      <div class="field"><label>Пароль</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+      <button id="loginButton" class="primary full" type="submit">Войти</button>
+    </form>
+    <div id="loginError" class="status"></div>
+  </div>
 </div>
 
+<div id="appScreen" class="app hidden">
+  <aside id="sidebar" class="sidebar">
+    <div class="brand">
+      <img src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp" alt="">
+      <div><strong>Система ДОС</strong><br><span style="font-size:12px;color:#bbc1cb">внутренняя панель</span></div>
+    </div>
 
-<!-- =========================
-     APP
-========================= -->
+    <nav class="nav">
+      <button class="nav-btn active" data-page="dashboard"><span class="ico">⌂</span>Главная</button>
+      <button class="nav-btn" data-page="mail"><span class="ico">✉</span>Почта</button>
+      <button class="nav-btn" data-page="vks"><span class="ico">◉</span>Рассылка ВКС</button>
+      <button class="nav-btn" data-page="contacts"><span class="ico">👥</span>Контакты</button>
+      <button class="nav-btn" data-page="templates"><span class="ico">▤</span>Шаблоны</button>
+      <button class="nav-btn" data-page="sent"><span class="ico">➤</span>Отправленные</button>
+      <button class="nav-btn" data-page="history"><span class="ico">◷</span>История</button>
+      <button class="nav-btn" data-page="settings"><span class="ico">⚙</span>Настройки</button>
+    </nav>
 
-<div id="appScreen">
+    <div class="sidebar-bottom">
+      <div id="sidebarUser" class="user-mini"></div>
+      <button class="ghost full" onclick="logout()">Выйти</button>
+    </div>
+  </aside>
 
-<header class="header">
-
-    <div class="header-inner">
-
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
         <div>
-            <h1>Система рассылки ВКС</h1>
-
-            <p>
-                Детский общественный совет при Уполномоченном
-                по правам ребёнка в Самарской области
-            </p>
+          <h1 id="pageTitle">Главная</h1>
+          <div class="sub">Детский общественный совет при Уполномоченном по правам ребёнка в Самарской области</div>
         </div>
+      </div>
+    </header>
 
-        <div class="account-box">
-
-            <div id="currentUser"></div>
-
-            <button
-                class="logout-button"
-                onclick="logout()"
-            >
-                Выйти
-            </button>
-
+    <div class="content">
+      <section id="page-dashboard" class="page active">
+        <div class="grid-cards">
+          <div class="metric"><div class="muted">Контактов</div><div id="metricContacts" class="value">0</div></div>
+          <div class="metric"><div class="muted">Отправлено писем</div><div id="metricEmails" class="value">0</div></div>
+          <div class="metric"><div class="muted">Рассылок ВКС</div><div id="metricVks" class="value">0</div></div>
+          <div class="metric"><div class="muted">Всего рассылок</div><div id="metricAll" class="value">0</div></div>
         </div>
-
-    </div>
-
-</header>
-
-
-<main class="page">
-
-<!-- =========================
-     CONTACTS
-========================= -->
-
-<section class="card">
-
-    <h2>Контакты</h2>
-
-    <p class="card-subtitle">
-        Выберите участников, которым нужно отправить письмо.
-    </p>
-
-    <div class="contact-form">
-
-        <div class="contact-form-title">
-            Добавить контакт
+        <div class="card">
+          <h2>Быстрые действия</h2>
+          <div class="quick">
+            <button class="primary" onclick="openPage('mail')">✉ Написать письмо</button>
+            <button class="secondary" onclick="openPage('vks')">◉ Создать рассылку ВКС</button>
+            <button class="ghost" onclick="openPage('contacts')">+ Добавить контакт</button>
+          </div>
         </div>
+        <div class="card">
+          <h2>Ближайшая ВКС</h2>
+          <div id="upcomingVks" class="muted">Пока нет сохранённых предстоящих ВКС.</div>
+        </div>
+      </section>
 
-        <div class="row">
-
-            <div class="field">
-                <label>ФИО</label>
-
-                <input
-                    id="newFullName"
-                    type="text"
-                    placeholder="Иванов Иван Иванович"
-                >
+      <section id="page-mail" class="page">
+        <div class="card">
+          <h2>Новое письмо</h2>
+          <p class="muted">Свободное письмо без шаблона ВКС. Получателей можно выбрать из контактов и/или ввести вручную.</p>
+          <div class="field">
+            <label>Получатели из контактов</label>
+            <div class="picker-toolbar">
+              <input id="mailSearch" class="search-input" placeholder="Поиск по ФИО или почте" oninput="renderMailPicker()">
+              <select id="mailDepartment" onchange="renderMailPicker()"><option value="">Все отделы</option></select>
             </div>
-
-            <div class="field">
-                <label>Электронная почта</label>
-
-                <input
-                    id="newEmail"
-                    type="email"
-                    placeholder="example@yandex.ru"
-                >
+            <div class="picker-actions">
+              <button class="secondary small" onclick="selectAllMail()">Выбрать всех видимых</button>
+              <button class="ghost small" onclick="mailSelected.clear();renderMailPicker()">Снять выбор</button>
             </div>
-
+            <div id="mailSelectedCount" class="selected-count">Выбрано из контактов: 0</div>
+            <div id="mailPicker" class="contact-picker"></div>
+          </div>
+          <div class="field"><label>Дополнительные адреса вручную</label><input id="manualRecipients" placeholder="example@mail.ru, example2@yandex.ru"></div>
+          <div class="field"><label>Тема</label><input id="freeSubject" placeholder="Тема письма"></div>
+          <div class="field"><label>Текст письма</label><textarea id="freeMessage" placeholder="Напишите письмо..."></textarea></div>
+          <div class="quick">
+            <button class="ghost" onclick="saveDraft()">Сохранить черновик</button>
+            <button id="sendFreeButton" class="primary" onclick="sendFreeMail()">Отправить письмо</button>
+          </div>
+          <div id="freeStatus" class="status"></div>
         </div>
+      </section>
 
-        <div class="field">
-            <label>Отдел</label>
+      <section id="page-vks" class="page">
+        <div class="two-col">
+          <div class="card" style="margin-top:0">
+            <h2>Рассылка ВКС</h2>
+            <p class="muted">Заполните данные ВКС и выберите участников.</p>
+            <div class="field"><label>Название ВКС</label><input id="meetingName" placeholder="Организационное собрание Детского общественного совета X созыва"></div>
+            <div class="row">
+              <div class="field"><label>Дата</label><input id="meetingDate" type="date" onchange="syncCalendarFromInput()"></div>
+              <div class="field"><label>Время</label><input id="meetingTime" type="time"></div>
+            </div>
+            <div class="field"><label>Ссылка на ВКС</label><input id="meetingLink" type="url" placeholder="https://..."></div>
+            <div class="field">
+              <label>Получатели</label>
+              <div class="picker-toolbar">
+                <input id="vksSearch" class="search-input" placeholder="Поиск по ФИО или почте" oninput="renderVksPicker()">
+                <select id="vksDepartment" onchange="renderVksPicker()"><option value="">Все отделы</option></select>
+              </div>
+              <div class="picker-actions">
+                <button class="secondary small" onclick="selectAllVks()">Выбрать всех видимых</button>
+                <button class="ghost small" onclick="vksSelected.clear();renderVksPicker()">Снять выбор</button>
+              </div>
+              <div id="vksSelectedCount" class="selected-count">Выбрано: 0</div>
+              <div id="vksPicker" class="contact-picker"></div>
+            </div>
+            <button id="sendVksButton" class="primary full" onclick="sendVks()">Отправить выбранным</button>
+            <div id="vksStatus" class="status"></div>
+          </div>
 
-            <input
-                id="newDepartment"
-                type="text"
-                placeholder="Например: Пресс-служба"
-            >
+          <div>
+            <div class="calendar">
+              <div class="cal-head">
+                <button onclick="changeMonth(-1)">‹</button>
+                <div id="calTitle" class="cal-title"></div>
+                <button onclick="changeMonth(1)">›</button>
+              </div>
+              <div class="cal-week"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
+              <div id="calGrid" class="cal-grid"></div>
+              <div id="todayCard" class="today-card"></div>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <button
-            class="primary-button"
-            onclick="addContact()"
-        >
-            + Добавить контакт
-        </button>
-
-    </div>
-
-
-    <div class="contacts-toolbar">
-
-        <input
-            id="searchContact"
-            type="text"
-            placeholder="Поиск по ФИО или почте"
-            oninput="renderContacts()"
-        >
-
-        <select
-            id="departmentFilter"
-            onchange="renderContacts()"
-        >
-            <option value="">
-                Все отделы
-            </option>
-        </select>
-
-    </div>
-
-
-    <div class="contacts-actions">
-
-        <button
-            class="secondary-button"
-            onclick="selectVisibleContacts()"
-        >
-            Выбрать всех
-        </button>
-
-        <button
-            class="secondary-button"
-            onclick="clearSelection()"
-        >
-            Снять выбор
-        </button>
-
-    </div>
-
-
-    <div
-        id="selectedInfo"
-        class="selected-info"
-    >
-        Выбрано: 0
-    </div>
-
-
-    <div
-        id="contactsList"
-        class="contact-list"
-    ></div>
-
-</section>
-
-
-<!-- =========================
-     MAILING
-========================= -->
-
-<section class="card">
-
-    <h2>Создать рассылку</h2>
-
-    <p class="card-subtitle">
-        Письмо будет отправлено выбранным контактам.
-    </p>
-
-
-    <div class="field">
-
-        <label>Название ВКС</label>
-
-        <input
-            id="meetingName"
-            type="text"
-            placeholder="Например: Организационная ВКС"
-        >
-
-    </div>
-
-
-    <div class="row">
-
-        <div class="field">
-
-            <label>Дата</label>
-
-            <input
-                id="meetingDate"
-                type="date"
-            >
-
+      <section id="page-contacts" class="page">
+        <div class="card" style="margin-top:0">
+          <div class="contacts-head">
+            <div><h2>Контакты</h2><div class="muted">ФИО, электронная почта и отдел.</div></div>
+            <button class="primary" onclick="openContactModal()">+ Добавить контакт</button>
+          </div>
+          <div style="margin-top:15px"><input id="contactsSearch" class="search-input" placeholder="Поиск контакта" oninput="renderContactsTable()"></div>
+          <div id="contactsList" class="contacts-list"></div>
         </div>
+      </section>
 
-        <div class="field">
-
-            <label>Время</label>
-
-            <input
-                id="meetingTime"
-                type="time"
-            >
-
+      <section id="page-templates" class="page">
+        <div class="card" style="margin-top:0">
+          <h2>Шаблоны</h2>
+          <div class="template-card"><strong>Приглашение на ВКС</strong><div class="muted">Использует тему, дату, время, ссылку и фирменную подпись ДОС.</div></div>
+          <div class="template-card"><strong>Обычное письмо ДОС</strong><div class="muted">Свободная тема и свободный текст. Используется в разделе «Почта».</div></div>
         </div>
+      </section>
 
+      <section id="page-sent" class="page"><div class="card" style="margin-top:0"><h2>Отправленные</h2><div id="sentList" class="history-list"></div></div></section>
+
+      <section id="page-history" class="page">
+        <div class="card" style="margin-top:0">
+          <h2>История</h2>
+          <div class="field" style="max-width:260px"><label>Тип</label><select id="historyFilter" onchange="renderHistory()"><option value="">Все</option><option value="mail">Письма</option><option value="vks">ВКС</option></select></div>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </section>
+
+      <section id="page-settings" class="page">
+        <div class="card" style="margin-top:0">
+          <h2>Настройки</h2>
+          <p><strong>Авторизация:</strong> Firebase Authentication</p>
+          <p><strong>Контакты и история:</strong> Cloud Firestore</p>
+          <p><strong>Отправка:</strong> EmailJS</p>
+          <p class="muted">Пароли почты и секретные ключи не должны храниться в HTML-коде.</p>
+        </div>
+      </section>
     </div>
-
-
-    <div class="field">
-
-        <label>Ссылка на ВКС</label>
-
-        <input
-            id="meetingLink"
-            type="url"
-            placeholder="https://..."
-        >
-
-    </div>
-
-
-    <button
-        id="sendButton"
-        class="primary-button full-button"
-        onclick="sendMailing()"
-    >
-        Отправить выбранным
-    </button>
-
-
-    <div
-        id="status"
-        class="status-box"
-    ></div>
-
-
-    <img
-        class="bottom-logo"
-        src="https://optim.tildacdn.pub/tild3033-6334-4139-b435-653038316630/-/format/webp/Frame_8.png.webp"
-        alt="ДОС"
-    >
-
-</section>
-
-</main>
-
+  </main>
 </div>
 
-
-<!-- =========================
-     EDIT MODAL
-========================= -->
-
-<div
-    id="editModal"
-    class="modal"
->
-
-    <div class="modal-card">
-
-        <h3>Редактировать контакт</h3>
-
-        <input
-            id="editContactId"
-            type="hidden"
-        >
-
-        <div class="field">
-            <label>ФИО</label>
-
-            <input
-                id="editFullName"
-                type="text"
-            >
-        </div>
-
-        <div class="field">
-            <label>Электронная почта</label>
-
-            <input
-                id="editEmail"
-                type="email"
-            >
-        </div>
-
-        <div class="field">
-            <label>Отдел</label>
-
-            <input
-                id="editDepartment"
-                type="text"
-            >
-        </div>
-
-        <div class="modal-actions">
-
-            <button
-                class="secondary-button"
-                onclick="closeEditModal()"
-            >
-                Отмена
-            </button>
-
-            <button
-                class="primary-button"
-                onclick="saveEditedContact()"
-            >
-                Сохранить
-            </button>
-
-        </div>
-
-    </div>
-
+<div id="contactModal" class="modal">
+  <div class="modal-card">
+    <h3 id="contactModalTitle">Добавить контакт</h3>
+    <input id="editContactId" type="hidden">
+    <div class="field"><label>ФИО</label><input id="contactName"></div>
+    <div class="field"><label>Электронная почта</label><input id="contactEmail" type="email"></div>
+    <div class="field"><label>Отдел</label><input id="contactDepartment" placeholder="Например: Пресс-служба"></div>
+    <div class="modal-actions"><button class="ghost" onclick="closeContactModal()">Отмена</button><button class="primary" onclick="saveContact()">Сохранить</button></div>
+  </div>
 </div>
-
 
 <script>
-
-/* =========================
-   FIREBASE CONFIG
-========================= */
-
 const firebaseConfig = {
-    apiKey: "AIzaSyAfTNifuWGb889ZrINp_2KEwHWYywJc1E0",
-    authDomain: "dos-mail.firebaseapp.com",
-    projectId: "dos-mail",
-    storageBucket: "dos-mail.firebasestorage.app",
-    messagingSenderId: "430305221467",
-    appId: "1:430305221467:web:09e222f4fec1b734d0187e",
-    measurementId: "G-LPNHXMQKDR"
+  apiKey: "AIzaSyAfTNifuWGb889ZrINp_2KEwHWYywJc1E0",
+  authDomain: "dos-mail.firebaseapp.com",
+  projectId: "dos-mail",
+  storageBucket: "dos-mail.firebasestorage.app",
+  messagingSenderId: "430305221467",
+  appId: "1:430305221467:web:09e222f4fec1b734d0187e",
+  measurementId: "G-LPNHXMQKDR"
 };
 
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-const auth =
-    firebase.auth();
+emailjs.init({ publicKey: "io1-lDIrdgcuHqN5X" });
+const SERVICE_ID = "service_cjzdlke";
+const VKS_TEMPLATE_ID = "template_61girbl";
+const FREE_MAIL_TEMPLATE_ID = "template_a67bib7";
 
-const db =
-    firebase.firestore();
-
-
-const ALLOWED_EMAILS = [
-    "dos.upr.63@yandex.ru"
-];
-
-
-/* =========================
-   EMAILJS
-========================= */
-
-emailjs.init({
-    publicKey:
-        "io1-lDIrdgcuHqN5X"
-});
-
-const SERVICE_ID =
-    "service_cjzdlke";
-
-const TEMPLATE_ID =
-    "template_61girbl";
-
-
-/* =========================
-   GLOBAL DATA
-========================= */
+const ALLOWED_EMAILS = ["dos.upr.63@yandex.ru"];
 
 let contacts = [];
+let historyData = [];
+let mailSelected = new Set();
+let vksSelected = new Set();
+let unsubscribeContacts = null;
+let unsubscribeHistory = null;
 
-let selectedIds =
-    new Set();
+let calendarCursor = new Date();
+calendarCursor.setDate(1);
 
-let unsubscribeContacts =
-    null;
-
-
-/* =========================
-   AUTH HELPERS
-========================= */
-
-function isAllowedUser(user) {
-
-    if (!user || !user.email) {
-        return false;
-    }
-
-    return ALLOWED_EMAILS
-        .map(email =>
-            email.toLowerCase()
-        )
-        .includes(
-            user.email.toLowerCase()
-        );
-
+function allowed(user){
+  return user && user.email && ALLOWED_EMAILS.includes(user.email.toLowerCase());
 }
 
-
-/* =========================
-   LOGIN
-========================= */
-
-auth.setPersistence(
-    firebase.auth.Auth.Persistence.LOCAL
-);
-
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 auth.onAuthStateChanged(async user => {
-
-    const loginScreen =
-        document.getElementById(
-            "loginScreen"
-        );
-
-    const appScreen =
-        document.getElementById(
-            "appScreen"
-        );
-
-
-    if (
-        user &&
-        isAllowedUser(user)
-    ) {
-
-        loginScreen.style.display =
-            "none";
-
-        appScreen.style.display =
-            "block";
-
-        document.getElementById(
-            "currentUser"
-        ).textContent =
-            user.email;
-
-        startContactsListener();
-
-    }
-
-    else {
-
-        if (user) {
-            await auth.signOut();
-        }
-
-        appScreen.style.display =
-            "none";
-
-        loginScreen.style.display =
-            "flex";
-
-        if (unsubscribeContacts) {
-            unsubscribeContacts();
-            unsubscribeContacts = null;
-        }
-
-    }
-
+  const login = document.getElementById("loginScreen");
+  const app = document.getElementById("appScreen");
+  if(user && allowed(user)){
+    login.classList.add("hidden");
+    app.classList.remove("hidden");
+    document.getElementById("sidebarUser").textContent = user.email;
+    startContacts();
+    startHistory();
+    renderCalendar();
+  }else{
+    if(user) await auth.signOut();
+    app.classList.add("hidden");
+    login.classList.remove("hidden");
+    stopListeners();
+  }
 });
 
-
-document
-.getElementById("loginForm")
-.addEventListener(
-    "submit",
-    async event => {
-
-        event.preventDefault();
-
-        const email =
-            document
-            .getElementById("loginEmail")
-            .value
-            .trim()
-            .toLowerCase();
-
-        const password =
-            document
-            .getElementById("loginPassword")
-            .value;
-
-        const button =
-            document
-            .getElementById("loginButton");
-
-        const errorBox =
-            document
-            .getElementById("loginError");
-
-
-        errorBox.style.display =
-            "none";
-
-        button.disabled =
-            true;
-
-        button.textContent =
-            "Проверяем…";
-
-
-        try {
-
-            const result =
-                await auth
-                .signInWithEmailAndPassword(
-                    email,
-                    password
-                );
-
-            if (
-                !isAllowedUser(
-                    result.user
-                )
-            ) {
-
-                await auth.signOut();
-
-                throw new Error(
-                    "NO_ACCESS"
-                );
-
-            }
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            let message =
-                "Не удалось войти.";
-
-            if (
-                error.code ===
-                "auth/invalid-credential"
-            ) {
-
-                message =
-                    "Неверная электронная почта или пароль.";
-
-            }
-
-            else if (
-                error.code ===
-                "auth/too-many-requests"
-            ) {
-
-                message =
-                    "Слишком много попыток входа. Попробуйте позже.";
-
-            }
-
-            else if (
-                error.message ===
-                "NO_ACCESS"
-            ) {
-
-                message =
-                    "У аккаунта нет доступа к системе.";
-
-            }
-
-
-            errorBox.textContent =
-                message;
-
-            errorBox.style.display =
-                "block";
-
-        }
-
-        finally {
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                "Войти";
-
-        }
-
-    }
-);
-
-
-async function logout() {
-
-    if (unsubscribeContacts) {
-        unsubscribeContacts();
-        unsubscribeContacts = null;
-    }
-
-    selectedIds.clear();
-
-    await auth.signOut();
-
-}
-
-
-/* =========================
-   FIRESTORE CONTACTS
-========================= */
-
-function startContactsListener() {
-
-    if (unsubscribeContacts) {
-        unsubscribeContacts();
-    }
-
-    unsubscribeContacts =
-        db.collection("contacts")
-        .onSnapshot(
-            snapshot => {
-
-                contacts =
-                    snapshot.docs.map(
-                        doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        })
-                    );
-
-                contacts.sort(
-                    (a, b) =>
-                        (a.fullName || "")
-                        .localeCompare(
-                            b.fullName || "",
-                            "ru"
-                        )
-                );
-
-                updateDepartmentFilter();
-
-                renderContacts();
-
-            },
-
-            error => {
-
-                console.error(
-                    "Firestore:",
-                    error
-                );
-
-                alert(
-                    "Не удалось загрузить контакты из Firebase."
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================
-   ADD CONTACT
-========================= */
-
-async function addContact() {
-
-    const fullName =
-        document
-        .getElementById(
-            "newFullName"
-        )
-        .value
-        .trim();
-
-    const email =
-        document
-        .getElementById(
-            "newEmail"
-        )
-        .value
-        .trim()
-        .toLowerCase();
-
-    const department =
-        document
-        .getElementById(
-            "newDepartment"
-        )
-        .value
-        .trim();
-
-
-    if (!fullName) {
-
-        alert(
-            "Укажите ФИО."
-        );
-
-        return;
-
-    }
-
-
-    if (!validEmail(email)) {
-
-        alert(
-            "Укажите корректную электронную почту."
-        );
-
-        return;
-
-    }
-
-
-    const duplicate =
-        contacts.some(
-            contact =>
-                (
-                    contact.email ||
-                    ""
-                )
-                .toLowerCase() ===
-                email
-        );
-
-
-    if (duplicate) {
-
-        alert(
-            "Контакт с такой электронной почтой уже есть."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        await db
-            .collection("contacts")
-            .add({
-
-                fullName:
-                    fullName,
-
-                email:
-                    email,
-
-                department:
-                    department,
-
-                createdAt:
-                    firebase
-                    .firestore
-                    .FieldValue
-                    .serverTimestamp()
-
-            });
-
-
-        document
-            .getElementById(
-                "newFullName"
-            )
-            .value = "";
-
-        document
-            .getElementById(
-                "newEmail"
-            )
-            .value = "";
-
-        document
-            .getElementById(
-                "newDepartment"
-            )
-            .value = "";
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Не удалось сохранить контакт."
-        );
-
-    }
-
-}
-
-
-/* =========================
-   EDIT CONTACT
-========================= */
-
-function openEditModal(id) {
-
-    const contact =
-        contacts.find(
-            contact =>
-                contact.id === id
-        );
-
-    if (!contact) {
-        return;
-    }
-
-
-    document
-        .getElementById(
-            "editContactId"
-        )
-        .value =
-            contact.id;
-
-    document
-        .getElementById(
-            "editFullName"
-        )
-        .value =
-            contact.fullName || "";
-
-    document
-        .getElementById(
-            "editEmail"
-        )
-        .value =
-            contact.email || "";
-
-    document
-        .getElementById(
-            "editDepartment"
-        )
-        .value =
-            contact.department || "";
-
-
-    document
-        .getElementById(
-            "editModal"
-        )
-        .classList
-        .add("show");
-
-}
-
-
-function closeEditModal() {
-
-    document
-        .getElementById(
-            "editModal"
-        )
-        .classList
-        .remove("show");
-
-}
-
-
-async function saveEditedContact() {
-
-    const id =
-        document
-        .getElementById(
-            "editContactId"
-        )
-        .value;
-
-    const fullName =
-        document
-        .getElementById(
-            "editFullName"
-        )
-        .value
-        .trim();
-
-    const email =
-        document
-        .getElementById(
-            "editEmail"
-        )
-        .value
-        .trim()
-        .toLowerCase();
-
-    const department =
-        document
-        .getElementById(
-            "editDepartment"
-        )
-        .value
-        .trim();
-
-
-    if (!fullName) {
-
-        alert(
-            "Укажите ФИО."
-        );
-
-        return;
-
-    }
-
-
-    if (!validEmail(email)) {
-
-        alert(
-            "Укажите корректную электронную почту."
-        );
-
-        return;
-
-    }
-
-
-    const duplicate =
-        contacts.some(
-            contact =>
-                contact.id !== id &&
-                (
-                    contact.email ||
-                    ""
-                )
-                .toLowerCase() ===
-                email
-        );
-
-
-    if (duplicate) {
-
-        alert(
-            "Другой контакт уже использует эту почту."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        await db
-            .collection("contacts")
-            .doc(id)
-            .update({
-
-                fullName:
-                    fullName,
-
-                email:
-                    email,
-
-                department:
-                    department,
-
-                updatedAt:
-                    firebase
-                    .firestore
-                    .FieldValue
-                    .serverTimestamp()
-
-            });
-
-
-        closeEditModal();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Не удалось изменить контакт."
-        );
-
-    }
-
-}
-
-
-/* =========================
-   DELETE CONTACT
-========================= */
-
-async function deleteContact(id) {
-
-    const contact =
-        contacts.find(
-            contact =>
-                contact.id === id
-        );
-
-
-    if (!contact) {
-        return;
-    }
-
-
-    const confirmed =
-        confirm(
-            "Удалить контакт?\n\n" +
-            contact.fullName
-        );
-
-
-    if (!confirmed) {
-        return;
-    }
-
-
-    try {
-
-        selectedIds.delete(id);
-
-        await db
-            .collection("contacts")
-            .doc(id)
-            .delete();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Не удалось удалить контакт."
-        );
-
-    }
-
-}
-
-
-/* =========================
-   FILTERS
-========================= */
-
-function getFilteredContacts() {
-
-    const search =
-        document
-        .getElementById(
-            "searchContact"
-        )
-        .value
-        .trim()
-        .toLowerCase();
-
-    const department =
-        document
-        .getElementById(
-            "departmentFilter"
-        )
-        .value;
-
-
-    return contacts.filter(
-        contact => {
-
-            const text =
-                (
-                    (
-                        contact.fullName ||
-                        ""
-                    ) +
-                    " " +
-                    (
-                        contact.email ||
-                        ""
-                    )
-                )
-                .toLowerCase();
-
-
-            const searchOk =
-                !search ||
-                text.includes(search);
-
-
-            const departmentOk =
-                !department ||
-                (
-                    contact.department ||
-                    ""
-                ) === department;
-
-
-            return (
-                searchOk &&
-                departmentOk
-            );
-
-        }
+document.getElementById("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = document.getElementById("loginButton");
+  const box = document.getElementById("loginError");
+  btn.disabled = true; btn.textContent = "Проверяем…";
+  box.className = "status"; box.style.display = "none";
+  try{
+    const result = await auth.signInWithEmailAndPassword(
+      document.getElementById("loginEmail").value.trim().toLowerCase(),
+      document.getElementById("loginPassword").value
     );
+    if(!allowed(result.user)){ await auth.signOut(); throw new Error("NO_ACCESS"); }
+  }catch(err){
+    box.textContent = err.code === "auth/invalid-credential"
+      ? "Неверная электронная почта или пароль."
+      : err.message === "NO_ACCESS"
+      ? "У этого аккаунта нет доступа."
+      : "Не удалось выполнить вход. Код: " + (err.code || "unknown");
+    box.className = "status error";
+  }finally{ btn.disabled = false; btn.textContent = "Войти"; }
+});
 
+async function logout(){ stopListeners(); await auth.signOut(); }
+function stopListeners(){
+  if(unsubscribeContacts){ unsubscribeContacts(); unsubscribeContacts = null; }
+  if(unsubscribeHistory){ unsubscribeHistory(); unsubscribeHistory = null; }
+}
+function toggleSidebar(){ document.getElementById("sidebar").classList.toggle("open"); }
+
+const pageNames = {dashboard:"Главная",mail:"Почта",vks:"Рассылка ВКС",contacts:"Контакты",templates:"Шаблоны",sent:"Отправленные",history:"История",settings:"Настройки"};
+document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>openPage(btn.dataset.page)));
+
+function openPage(name){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("page-"+name).classList.add("active");
+  document.querySelector(`.nav-btn[data-page="${name}"]`)?.classList.add("active");
+  document.getElementById("pageTitle").textContent = pageNames[name] || "";
+  document.getElementById("sidebar").classList.remove("open");
+  if(name==="mail") renderMailPicker();
+  if(name==="vks") renderVksPicker();
+  if(name==="contacts") renderContactsTable();
+  if(name==="sent") renderSent();
+  if(name==="history") renderHistory();
 }
 
-
-function updateDepartmentFilter() {
-
-    const select =
-        document
-        .getElementById(
-            "departmentFilter"
-        );
-
-    const current =
-        select.value;
-
-
-    const departments =
-        [
-            ...new Set(
-                contacts
-                    .map(
-                        contact =>
-                            (
-                                contact.department ||
-                                ""
-                            )
-                            .trim()
-                    )
-                    .filter(Boolean)
-            )
-        ]
-        .sort(
-            (a, b) =>
-                a.localeCompare(
-                    b,
-                    "ru"
-                )
-        );
-
-
-    select.innerHTML =
-        '<option value="">Все отделы</option>';
-
-
-    departments.forEach(
-        department => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                department;
-
-            option.textContent =
-                department;
-
-            select.appendChild(
-                option
-            );
-
-        }
-    );
-
-
-    if (
-        departments.includes(
-            current
-        )
-    ) {
-
-        select.value =
-            current;
-
-    }
-
+function startContacts(){
+  if(unsubscribeContacts) unsubscribeContacts();
+  unsubscribeContacts = db.collection("contacts").onSnapshot(snap=>{
+    contacts = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.fullName||"").localeCompare(b.fullName||"","ru"));
+    updateDepartmentSelects(); renderContactsTable(); renderMailPicker(); renderVksPicker(); updateDashboard();
+  }, console.error);
 }
 
-
-/* =========================
-   RENDER CONTACTS
-========================= */
-
-function renderContacts() {
-
-    const list =
-        document
-        .getElementById(
-            "contactsList"
-        );
-
-    const filtered =
-        getFilteredContacts();
-
-
-    list.innerHTML = "";
-
-
-    if (
-        filtered.length === 0
-    ) {
-
-        list.innerHTML =
-            '<div class="no-contacts">' +
-            'Контактов пока нет.' +
-            '</div>';
-
-        updateSelectedInfo();
-
-        return;
-
-    }
-
-
-    filtered.forEach(
-        contact => {
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-            item.className =
-                "contact-item";
-
-
-            const checked =
-                selectedIds.has(
-                    contact.id
-                );
-
-
-            item.innerHTML = `
-
-                <input
-                    class="contact-check"
-                    type="checkbox"
-                    ${checked ? "checked" : ""}
-                    onchange="toggleContact('${contact.id}', this.checked)"
-                >
-
-                <div>
-
-                    <div class="contact-name">
-                        ${escapeHtml(contact.fullName || "")}
-                    </div>
-
-                    <div class="contact-email">
-                        ${escapeHtml(contact.email || "")}
-                    </div>
-
-                    ${
-                        contact.department
-                        ?
-                        `
-                        <div class="contact-department">
-                            ${escapeHtml(contact.department)}
-                        </div>
-                        `
-                        :
-                        ""
-                    }
-
-                </div>
-
-                <div class="contact-buttons">
-
-                    <button
-                        class="secondary-button"
-                        onclick="openEditModal('${contact.id}')"
-                    >
-                        Изменить
-                    </button>
-
-                    <button
-                        class="danger-button"
-                        onclick="deleteContact('${contact.id}')"
-                    >
-                        Удалить
-                    </button>
-
-                </div>
-            `;
-
-
-            list.appendChild(
-                item
-            );
-
-        }
-    );
-
-
-    updateSelectedInfo();
-
+function filteredContacts(searchId, depId){
+  const search = (document.getElementById(searchId)?.value || "").toLowerCase().trim();
+  const dep = document.getElementById(depId)?.value || "";
+  return contacts.filter(c=>{
+    const text = `${c.fullName||""} ${c.email||""}`.toLowerCase();
+    return (!search || text.includes(search)) && (!dep || (c.department||"")===dep);
+  });
 }
 
-
-/* =========================
-   SELECTION
-========================= */
-
-function toggleContact(
-    id,
-    checked
-) {
-
-    if (checked) {
-
-        selectedIds.add(id);
-
-    }
-
-    else {
-
-        selectedIds.delete(id);
-
-    }
-
-
-    updateSelectedInfo();
-
+function updateDepartmentSelects(){
+  const deps=[...new Set(contacts.map(c=>(c.department||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ru"));
+  ["mailDepartment","vksDepartment"].forEach(id=>{
+    const el=document.getElementById(id); if(!el) return; const old=el.value;
+    el.innerHTML='<option value="">Все отделы</option>'+deps.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join("");
+    if(deps.includes(old)) el.value=old;
+  });
 }
 
-
-function selectVisibleContacts() {
-
-    getFilteredContacts()
-        .forEach(
-            contact =>
-                selectedIds.add(
-                    contact.id
-                )
-        );
-
-
-    renderContacts();
-
+function renderPicker(containerId, list, setObj, counterId, prefix){
+  const box=document.getElementById(containerId); if(!box) return;
+  box.innerHTML=list.length ? list.map(c=>`
+    <label class="pick-item">
+      <input type="checkbox" ${setObj.has(c.id)?"checked":""} onchange="${prefix}Toggle('${c.id}',this.checked)">
+      <div><div class="pick-name">${escapeHtml(c.fullName||"")}</div><div class="pick-meta">${escapeHtml(c.email||"")}</div>${c.department?`<span class="badge">${escapeHtml(c.department)}</span>`:""}</div>
+    </label>`).join("") : '<div class="pick-item"><div></div><div class="muted">Контакты не найдены.</div></div>';
+  document.getElementById(counterId).textContent = prefix==="mail" ? "Выбрано из контактов: "+setObj.size : "Выбрано: "+setObj.size;
 }
 
+function renderMailPicker(){ renderPicker("mailPicker",filteredContacts("mailSearch","mailDepartment"),mailSelected,"mailSelectedCount","mail"); }
+function renderVksPicker(){ renderPicker("vksPicker",filteredContacts("vksSearch","vksDepartment"),vksSelected,"vksSelectedCount","vks"); }
+function mailToggle(id,checked){ checked?mailSelected.add(id):mailSelected.delete(id); renderMailPicker(); }
+function vksToggle(id,checked){ checked?vksSelected.add(id):vksSelected.delete(id); renderVksPicker(); }
+function selectAllMail(){ filteredContacts("mailSearch","mailDepartment").forEach(c=>mailSelected.add(c.id)); renderMailPicker(); }
+function selectAllVks(){ filteredContacts("vksSearch","vksDepartment").forEach(c=>vksSelected.add(c.id)); renderVksPicker(); }
 
-function clearSelection() {
-
-    selectedIds.clear();
-
-    renderContacts();
-
+function renderContactsTable(){
+  const box=document.getElementById("contactsList"); if(!box) return;
+  const q=(document.getElementById("contactsSearch")?.value||"").toLowerCase().trim();
+  const list=contacts.filter(c=>`${c.fullName||""} ${c.email||""} ${c.department||""}`.toLowerCase().includes(q));
+  box.innerHTML=list.length ? list.map(c=>`
+    <div class="contact-row">
+      <div><strong>${escapeHtml(c.fullName||"")}</strong></div>
+      <div class="mail">${escapeHtml(c.email||"")}</div>
+      <div>${c.department?`<span class="badge">${escapeHtml(c.department)}</span>`:"—"}</div>
+      <div class="actions"><button class="secondary small" onclick="editContact('${c.id}')">Изменить</button><button class="danger small" onclick="deleteContact('${c.id}')">Удалить</button></div>
+    </div>`).join("") : '<div class="contact-row"><div class="muted">Контактов пока нет.</div></div>';
 }
 
+function openContactModal(){
+  document.getElementById("contactModalTitle").textContent="Добавить контакт";
+  document.getElementById("editContactId").value="";
+  document.getElementById("contactName").value="";
+  document.getElementById("contactEmail").value="";
+  document.getElementById("contactDepartment").value="";
+  document.getElementById("contactModal").classList.add("show");
+}
+function editContact(id){
+  const c=contacts.find(x=>x.id===id); if(!c) return;
+  document.getElementById("contactModalTitle").textContent="Редактировать контакт";
+  document.getElementById("editContactId").value=id;
+  document.getElementById("contactName").value=c.fullName||"";
+  document.getElementById("contactEmail").value=c.email||"";
+  document.getElementById("contactDepartment").value=c.department||"";
+  document.getElementById("contactModal").classList.add("show");
+}
+function closeContactModal(){ document.getElementById("contactModal").classList.remove("show"); }
 
-function updateSelectedInfo() {
-
-    document
-        .getElementById(
-            "selectedInfo"
-        )
-        .textContent =
-            "Выбрано: " +
-            selectedIds.size;
-
+async function saveContact(){
+  const id=document.getElementById("editContactId").value;
+  const fullName=document.getElementById("contactName").value.trim();
+  const email=document.getElementById("contactEmail").value.trim().toLowerCase();
+  const department=document.getElementById("contactDepartment").value.trim();
+  if(!fullName || !validEmail(email)){ alert("Проверьте ФИО и электронную почту."); return; }
+  if(contacts.some(c=>c.id!==id && (c.email||"").toLowerCase()===email)){ alert("Контакт с такой почтой уже существует."); return; }
+  const data={fullName,email,department,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+  if(id) await db.collection("contacts").doc(id).update(data);
+  else await db.collection("contacts").add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  closeContactModal();
+}
+async function deleteContact(id){
+  const c=contacts.find(x=>x.id===id); if(!c) return;
+  if(confirm(`Удалить контакт?\n\n${c.fullName}`)){ mailSelected.delete(id); vksSelected.delete(id); await db.collection("contacts").doc(id).delete(); }
 }
 
-
-/* =========================
-   MAILING
-========================= */
-
-async function sendMailing() {
-
-    const user =
-        auth.currentUser;
-
-
-    if (
-        !user ||
-        !isAllowedUser(user)
-    ) {
-
-        alert(
-            "Сессия завершена. Войдите снова."
-        );
-
-        await logout();
-
-        return;
-
-    }
-
-
-    const recipients =
-        contacts.filter(
-            contact =>
-                selectedIds.has(
-                    contact.id
-                )
-        );
-
-
-    if (
-        recipients.length === 0
-    ) {
-
-        showStatus(
-            "Выберите хотя бы одного получателя.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const meetingName =
-        document
-        .getElementById(
-            "meetingName"
-        )
-        .value
-        .trim();
-
-    const meetingDate =
-        document
-        .getElementById(
-            "meetingDate"
-        )
-        .value;
-
-    const meetingTime =
-        document
-        .getElementById(
-            "meetingTime"
-        )
-        .value;
-
-    const meetingLink =
-        document
-        .getElementById(
-            "meetingLink"
-        )
-        .value
-        .trim();
-
-
-    if (!meetingName) {
-
-        showStatus(
-            "Укажите название ВКС.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (!meetingDate) {
-
-        showStatus(
-            "Укажите дату ВКС.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (!meetingTime) {
-
-        showStatus(
-            "Укажите время ВКС.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        new URL(meetingLink);
-
-    }
-
-    catch {
-
-        showStatus(
-            "Укажите корректную ссылку на ВКС.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const button =
-        document
-        .getElementById(
-            "sendButton"
-        );
-
-
-    button.disabled =
-        true;
-
-
-    let sent =
-        0;
-
-    let failed =
-        0;
-
-
-    for (
-        let i = 0;
-        i < recipients.length;
-        i++
-    ) {
-
-        const contact =
-            recipients[i];
-
-
-        showStatus(
-            "Отправляем письмо " +
-            (i + 1) +
-            " из " +
-            recipients.length +
-            "<br><b>" +
-            escapeHtml(
-                contact.fullName
-            ) +
-            "</b><br>" +
-            escapeHtml(
-                contact.email
-            ),
-            "info",
-            true
-        );
-
-
-        try {
-
-            await emailjs.send(
-
-                SERVICE_ID,
-
-                TEMPLATE_ID,
-
-                {
-
-                    to_email:
-                        contact.email,
-
-                    meeting_name:
-                        meetingName,
-
-                    meeting_date:
-                        formatDate(
-                            meetingDate
-                        ),
-
-                    meeting_time:
-                        meetingTime,
-
-                    meeting_link:
-                        meetingLink,
-
-                    participant_name:
-                        contact.fullName || ""
-
-                }
-
-            );
-
-
-            sent++;
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "EmailJS:",
-                error
-            );
-
-            failed++;
-
-        }
-
-
-        if (
-            i <
-            recipients.length - 1
-        ) {
-
-            await sleep(
-                1200
-            );
-
-        }
-
-    }
-
-
-    button.disabled =
-        false;
-
-
-    if (
-        failed === 0
-    ) {
-
-        showStatus(
-            "✅ Рассылка завершена.<br>" +
-            "Отправлено писем: <b>" +
-            sent +
-            "</b>",
-            "success",
-            true
-        );
-
-    }
-
-    else {
-
-        showStatus(
-            "Рассылка завершена.<br>" +
-            "Отправлено: <b>" +
-            sent +
-            "</b><br>" +
-            "Ошибок: <b>" +
-            failed +
-            "</b>",
-            "error",
-            true
-        );
-
-    }
-
+function startHistory(){
+  if(unsubscribeHistory) unsubscribeHistory();
+  unsubscribeHistory = db.collection("history").orderBy("createdAt","desc").limit(100).onSnapshot(snap=>{
+    historyData=snap.docs.map(d=>({id:d.id,...d.data()})); updateDashboard(); renderSent(); renderHistory();
+  },console.error);
+}
+function renderSent(){ const box=document.getElementById("sentList"); if(box) box.innerHTML=historyData.length?historyData.map(historyHtml).join(""):'<div class="muted">Отправлений пока нет.</div>'; }
+function renderHistory(){
+  const box=document.getElementById("historyList"); if(!box) return;
+  const filter=document.getElementById("historyFilter")?.value||"";
+  const list=historyData.filter(h=>!filter||h.type===filter);
+  box.innerHTML=list.length?list.map(historyHtml).join(""):'<div class="muted">Записей пока нет.</div>';
+}
+function historyHtml(h){
+  const date=h.createdAt?.toDate?h.createdAt.toDate().toLocaleString("ru-RU"):"";
+  return `<div class="history-item"><div class="history-type">${h.type==="vks"?"ВКС":"Письмо"}</div><div><div class="history-title">${escapeHtml(h.title||"Без темы")}</div><div class="history-meta">Получателей: ${h.recipientCount||0} · Успешно: ${h.successCount||0} · Ошибок: ${h.failureCount||0}</div>${h.type==="vks"&&h.meetingDate?`<div class="history-meta">Дата ВКС: ${escapeHtml(h.meetingDate)} ${escapeHtml(h.meetingTime||"")}</div>`:""}</div><div class="history-meta">${date}</div></div>`;
 }
 
-
-/* =========================
-   HELPERS
-========================= */
-
-function validEmail(email) {
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(email);
-
+function updateDashboard(){
+  document.getElementById("metricContacts").textContent=contacts.length;
+  const mails=historyData.filter(h=>h.type==="mail"), vks=historyData.filter(h=>h.type==="vks");
+  document.getElementById("metricEmails").textContent=mails.reduce((s,h)=>s+(h.successCount||0),0);
+  document.getElementById("metricVks").textContent=vks.length;
+  document.getElementById("metricAll").textContent=historyData.length;
+  const todayIso=new Date().toISOString().slice(0,10);
+  const upcoming=vks.filter(h=>h.meetingDate&&h.meetingDate>=todayIso).sort((a,b)=>(a.meetingDate+(a.meetingTime||"")).localeCompare(b.meetingDate+(b.meetingTime||"")))[0];
+  document.getElementById("upcomingVks").innerHTML=upcoming?`<strong>${escapeHtml(upcoming.title||"ВКС")}</strong><br>${formatRuDate(upcoming.meetingDate)} · ${escapeHtml(upcoming.meetingTime||"")}`:"Пока нет сохранённых предстоящих ВКС.";
 }
 
-
-function formatDate(date) {
-
-    if (!date) {
-        return "";
-    }
-
-    const parts =
-        date.split("-");
-
-
-    return (
-        parts[2] +
-        "." +
-        parts[1] +
-        "." +
-        parts[0]
-    );
-
+async function saveDraft(){
+  const subject=document.getElementById("freeSubject").value.trim(), message=document.getElementById("freeMessage").value.trim();
+  if(!subject&&!message){ alert("Черновик пуст."); return; }
+  await db.collection("drafts").add({subject,message,selectedContactIds:[...mailSelected],manualRecipients:document.getElementById("manualRecipients").value.trim(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  showStatus("freeStatus","Черновик сохранён.","success");
 }
 
+async function sendFreeMail(){
+  if(FREE_MAIL_TEMPLATE_ID==="REPLACE_WITH_CUSTOM_TEMPLATE_ID"){
+    showStatus("freeStatus","Сначала создайте второй шаблон EmailJS для обычного письма и вставьте его Template ID в код.","error"); return;
+  }
+  const subject=document.getElementById("freeSubject").value.trim(), message=document.getElementById("freeMessage").value.trim();
+  if(!subject||!message){ showStatus("freeStatus","Укажите тему и текст письма.","error"); return; }
 
-function sleep(ms) {
+  const fromContacts=contacts.filter(c=>mailSelected.has(c.id)).map(c=>({email:c.email,name:c.fullName||""}));
+  const manual=parseEmails(document.getElementById("manualRecipients").value).map(email=>({email,name:""}));
+  const map=new Map(); [...fromContacts,...manual].forEach(r=>{if(validEmail(r.email))map.set(r.email.toLowerCase(),r);});
+  const recipients=[...map.values()];
+  if(!recipients.length){ showStatus("freeStatus","Выберите получателей или укажите адрес вручную.","error"); return; }
+  if(!confirm(`Отправить письмо ${recipients.length} получателям?`)) return;
 
-    return new Promise(
-        resolve =>
-            setTimeout(
-                resolve,
-                ms
-            )
-    );
-
+  const btn=document.getElementById("sendFreeButton");btn.disabled=true;let ok=0,fail=0;
+  for(let i=0;i<recipients.length;i++){
+    const r=recipients[i];
+    showStatus("freeStatus",`Отправляем ${i+1} из ${recipients.length}<br><b>${escapeHtml(r.email)}</b>`,"info",true);
+    try{await emailjs.send(SERVICE_ID,FREE_MAIL_TEMPLATE_ID,{to_email:r.email,subject,message,recipient_name:r.name});ok++;}catch(e){console.error(e);fail++;}
+    if(i<recipients.length-1)await sleep(1200);
+  }
+  btn.disabled=false;
+  await db.collection("history").add({type:"mail",title:subject,recipientCount:recipients.length,successCount:ok,failureCount:fail,recipients:recipients.map(r=>r.email),createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  showStatus("freeStatus",`Отправка завершена. Успешно: <b>${ok}</b>. Ошибок: <b>${fail}</b>.`,fail?"error":"success",true);
 }
 
+async function sendVks(){
+  const title=document.getElementById("meetingName").value.trim(), date=document.getElementById("meetingDate").value, time=document.getElementById("meetingTime").value, link=document.getElementById("meetingLink").value.trim();
+  const recipients=contacts.filter(c=>vksSelected.has(c.id));
+  if(!title||!date||!time||!link){showStatus("vksStatus","Заполните название, дату, время и ссылку.","error");return;}
+  try{new URL(link);}catch{showStatus("vksStatus","Проверьте ссылку на ВКС.","error");return;}
+  if(!recipients.length){showStatus("vksStatus","Выберите хотя бы одного получателя.","error");return;}
+  if(!confirm(`Отправить приглашение на ВКС ${recipients.length} участникам?`))return;
 
-function showStatus(
-    message,
-    type,
-    html = false
-) {
-
-    const status =
-        document
-        .getElementById(
-            "status"
-        );
-
-
-    status.className =
-        "status-box status-" +
-        type;
-
-
-    if (html) {
-
-        status.innerHTML =
-            message;
-
-    }
-
-    else {
-
-        status.textContent =
-            message;
-
-    }
-
+  const btn=document.getElementById("sendVksButton");btn.disabled=true;let ok=0,fail=0;
+  for(let i=0;i<recipients.length;i++){
+    const c=recipients[i];
+    showStatus("vksStatus",`Отправляем ${i+1} из ${recipients.length}<br><b>${escapeHtml(c.fullName||c.email)}</b>`,"info",true);
+    try{await emailjs.send(SERVICE_ID,VKS_TEMPLATE_ID,{to_email:c.email,participant_name:c.fullName||"",meeting_name:title,meeting_date:formatRuDate(date),meeting_time:time,meeting_link:link});ok++;}catch(e){console.error(e);fail++;}
+    if(i<recipients.length-1)await sleep(1200);
+  }
+  btn.disabled=false;
+  await db.collection("history").add({type:"vks",title,meetingDate:date,meetingTime:time,meetingLink:link,recipientCount:recipients.length,successCount:ok,failureCount:fail,recipients:recipients.map(c=>c.email),createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  showStatus("vksStatus",`Рассылка завершена. Успешно: <b>${ok}</b>. Ошибок: <b>${fail}</b>.`,fail?"error":"success",true);
 }
 
-
-function escapeHtml(value) {
-
-    return String(
-        value || ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
+function renderCalendar(){
+  const year=calendarCursor.getFullYear(),month=calendarCursor.getMonth();
+  document.getElementById("calTitle").textContent=new Intl.DateTimeFormat("ru-RU",{month:"long",year:"numeric"}).format(calendarCursor);
+  const firstDay=new Date(year,month,1),lastDay=new Date(year,month+1,0).getDate(),start=(firstDay.getDay()+6)%7,today=new Date(),selected=document.getElementById("meetingDate").value;
+  let html="";for(let i=0;i<start;i++)html+='<button class="day empty"></button>';
+  for(let d=1;d<=lastDay;d++){
+    const iso=`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const isToday=today.getFullYear()===year&&today.getMonth()===month&&today.getDate()===d;
+    const cls=["day",isToday?"today":"",selected===iso?"selected":""].filter(Boolean).join(" ");
+    html+=`<button class="${cls}" onclick="pickCalendarDate('${iso}')">${d}</button>`;
+  }
+  document.getElementById("calGrid").innerHTML=html;
+  document.getElementById("todayCard").innerHTML=`<strong>Сегодня</strong><br>${new Intl.DateTimeFormat("ru-RU",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(today)}`;
 }
+function changeMonth(delta){calendarCursor.setMonth(calendarCursor.getMonth()+delta);renderCalendar();}
+function pickCalendarDate(iso){document.getElementById("meetingDate").value=iso;const d=new Date(iso+"T00:00:00");calendarCursor=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar();}
+function syncCalendarFromInput(){const v=document.getElementById("meetingDate").value;if(v){const d=new Date(v+"T00:00:00");calendarCursor=new Date(d.getFullYear(),d.getMonth(),1);}renderCalendar();}
 
-
-/* Закрытие окна редактирования по клику на фон */
-
-document
-.getElementById(
-    "editModal"
-)
-.addEventListener(
-    "click",
-    event => {
-
-        if (
-            event.target.id ===
-            "editModal"
-        ) {
-
-            closeEditModal();
-
-        }
-
-    }
-);
-
+function validEmail(email){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);}
+function parseEmails(text){return text.split(/[\n,;]+/).map(x=>x.trim().toLowerCase()).filter(Boolean);}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function formatRuDate(iso){if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}.${m}.${y}`;}
+function showStatus(id,msg,type,html=false){const el=document.getElementById(id);el.className=`status ${type}`;html?el.innerHTML=msg:el.textContent=msg;}
+function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+document.getElementById("contactModal").addEventListener("click",e=>{if(e.target.id==="contactModal")closeContactModal();});
 </script>
-
 </body>
 </html>
