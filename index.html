@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Система ДОС</title>
+<!-- Версия 2.1: ручные адреса, отмена и перенос ВКС -->
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -42,9 +43,13 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
 .contacts-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.contacts-list{margin-top:14px;border:1px solid var(--border);border-radius:13px;overflow:hidden}.contact-row{display:grid;grid-template-columns:1.5fr 1.2fr 1fr auto;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border)}.contact-row:last-child{border-bottom:0}.contact-row strong{display:block}.contact-row .mail{color:var(--muted);font-size:14px}.actions{display:flex;gap:6px}.small{padding:7px 9px;font-size:12px}
 .history-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}.history-item{border:1px solid var(--border);border-radius:13px;padding:14px;display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:start}.history-type{font-weight:800}.history-title{font-weight:700}.history-meta{font-size:13px;color:var(--muted);margin-top:5px}
 .template-card{border:1px solid var(--border);border-radius:14px;padding:16px;margin-top:12px}.template-card strong{display:block;margin-bottom:6px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show{display:flex}.modal-card{background:#fff;border-radius:18px;padding:22px;width:min(500px,100%)}.modal-card h3{margin-top:0}.modal-actions{display:flex;gap:10px}.modal-actions>*{flex:1}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show{display:flex}.modal-card{background:#fff;border-radius:18px;padding:22px;width:min(500px,100%);max-height:calc(100vh - 40px);overflow:auto}.modal-card.wide{width:min(650px,100%)}.modal-card h3{margin-top:0}.modal-actions{display:flex;gap:10px}.modal-actions>*{flex:1}
+.field textarea.compact-area{min-height:72px}.hint{font-size:13px;color:var(--muted);line-height:1.45;margin-top:6px}
+.meeting-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}.meeting-entry{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--border);border-radius:13px;padding:14px}.meeting-entry strong{display:block;margin-bottom:5px}.meeting-actions{display:flex;gap:7px;flex-wrap:wrap}.meeting-label{display:inline-block;border-radius:999px;background:#eef0f3;color:#374151;padding:4px 9px;font-size:12px;font-weight:700;margin-left:6px}.meeting-label.cancelled{background:#fee4e2;color:#9f1c13}.meeting-label.rescheduled{background:#e9e4f8;color:#60478b}
+.meeting-summary{border:1px solid var(--border);border-radius:12px;padding:13px;margin:10px 0 15px;line-height:1.6}.notice-preview{background:#f7f8fa;border:1px solid var(--border);padding:12px;border-radius:12px;white-space:pre-wrap;font-size:13px;line-height:1.5;max-height:175px;overflow:auto}.warning-note{background:#fff5df;color:#765400;padding:10px;border-radius:10px;font-size:13px;margin:9px 0}.action-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+button:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:-270px;top:0;width:250px;z-index:15;transition:.2s}.sidebar.open{left:0}.hamburger{display:block}.grid-cards{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.contact-row{grid-template-columns:1fr}.history-item{grid-template-columns:1fr}}
-@media(max-width:600px){.content{padding:14px}.topbar{padding:14px}.grid-cards{grid-template-columns:1fr}.row,.picker-toolbar{grid-template-columns:1fr}.card{padding:16px}}
+@media(max-width:600px){.content{padding:14px}.topbar{padding:14px}.grid-cards{grid-template-columns:1fr}.row,.picker-toolbar{grid-template-columns:1fr}.card{padding:16px}.meeting-entry{align-items:stretch;flex-direction:column}.meeting-actions button{flex:1}.modal-actions{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -172,7 +177,12 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
               <div id="vksSelectedCount" class="selected-count">Выбрано: 0</div>
               <div id="vksPicker" class="contact-picker"></div>
             </div>
-            <button id="sendVksButton" class="primary full" onclick="sendVks()">Отправить выбранным</button>
+            <div class="field">
+              <label for="vksManualRecipients">Дополнительные адреса вручную</label>
+              <textarea id="vksManualRecipients" class="compact-area" placeholder="example@mail.ru, example2@yandex.ru"></textarea>
+              <div class="hint">Можно вводить адреса через запятую, пробел или с новой строки. Добавлять их в контакты не требуется. Повторяющиеся адреса будут объединены.</div>
+            </div>
+            <button id="sendVksButton" class="primary full" onclick="sendVks()">Отправить приглашения</button>
             <div id="vksStatus" class="status"></div>
           </div>
 
@@ -188,6 +198,17 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
               <div id="todayCard" class="today-card"></div>
             </div>
           </div>
+        </div>
+        <div class="card">
+          <div class="action-heading">
+            <div><h2>Управление ВКС</h2><div class="muted">Отмена и перенос ранее отправленных приглашений.</div></div>
+            <div class="meeting-actions">
+              <button class="danger" onclick="openMeetingActionModal('cancel')">Отменить ВКС</button>
+              <button class="secondary" onclick="openMeetingActionModal('reschedule')">Перенести ВКС</button>
+            </div>
+          </div>
+          <div id="vksMeetingsList" class="meeting-list"><div class="muted">Загружаем список ВКС…</div></div>
+          <div id="manageVksStatus" class="status"></div>
         </div>
       </section>
 
@@ -206,7 +227,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
         <div class="card" style="margin-top:0">
           <h2>Шаблоны</h2>
           <div class="template-card"><strong>Приглашение на ВКС</strong><div class="muted">Использует тему, дату, время, ссылку и фирменную подпись ДОС.</div></div>
-          <div class="template-card"><strong>Обычное письмо ДОС</strong><div class="muted">Свободная тема и свободный текст. Используется в разделе «Почта».</div></div>
+          <div class="template-card"><strong>Обычное письмо ДОС</strong><div class="muted">Свободная тема и свободный текст. Используется в разделе «Почта», а также для уведомлений об отмене и переносе ВКС.</div></div>
         </div>
       </section>
 
@@ -215,7 +236,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
       <section id="page-history" class="page">
         <div class="card" style="margin-top:0">
           <h2>История</h2>
-          <div class="field" style="max-width:260px"><label>Тип</label><select id="historyFilter" onchange="renderHistory()"><option value="">Все</option><option value="mail">Письма</option><option value="vks">ВКС</option></select></div>
+          <div class="field" style="max-width:260px"><label>Тип</label><select id="historyFilter" onchange="renderHistory()"><option value="">Все</option><option value="mail">Письма</option><option value="vks">Все события ВКС</option><option value="vks_cancel">Отмена ВКС</option><option value="vks_reschedule">Перенос ВКС</option></select></div>
           <div id="historyList" class="history-list"></div>
         </div>
       </section>
@@ -226,6 +247,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
           <p><strong>Авторизация:</strong> Firebase Authentication</p>
           <p><strong>Контакты и история:</strong> Cloud Firestore</p>
           <p><strong>Отправка:</strong> EmailJS</p>
+          <p><strong>Версия:</strong> 2.1 — отмена и перенос ВКС</p>
           <p class="muted">Пароли почты и секретные ключи не должны храниться в HTML-коде.</p>
         </div>
       </section>
@@ -241,6 +263,31 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
     <div class="field"><label>Электронная почта</label><input id="contactEmail" type="email"></div>
     <div class="field"><label>Отдел</label><input id="contactDepartment" placeholder="Например: Пресс-служба"></div>
     <div class="modal-actions"><button class="ghost" onclick="closeContactModal()">Отмена</button><button class="primary" onclick="saveContact()">Сохранить</button></div>
+  </div>
+</div>
+
+<div id="meetingActionModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="meetingActionTitle">
+  <div class="modal-card wide">
+    <h3 id="meetingActionTitle">Изменить ВКС</h3>
+    <p id="meetingActionIntro" class="muted"></p>
+    <div class="field">
+      <label for="meetingActionSelect">Выберите ВКС</label>
+      <select id="meetingActionSelect" onchange="refreshMeetingActionForm()"></select>
+    </div>
+    <div id="meetingActionInfo" class="meeting-summary"></div>
+    <div id="rescheduleFields" class="hidden">
+      <div class="row">
+        <div class="field"><label for="newMeetingDate">Новая дата</label><input id="newMeetingDate" type="date" oninput="updateMeetingNotificationPreview()"></div>
+        <div class="field"><label for="newMeetingTime">Новое время</label><input id="newMeetingTime" type="time" oninput="updateMeetingNotificationPreview()"></div>
+      </div>
+      <div class="field"><label for="newMeetingLink">Новая ссылка на ВКС</label><input id="newMeetingLink" type="url" placeholder="https://..." oninput="updateMeetingNotificationPreview()"></div>
+    </div>
+    <div class="field"><label>Предпросмотр уведомления</label><div id="meetingNotificationPreview" class="notice-preview"></div></div>
+    <div id="meetingActionStatus" class="status"></div>
+    <div class="modal-actions" style="margin-top:14px">
+      <button id="closeMeetingActionButton" class="ghost" onclick="closeMeetingActionModal()">Закрыть</button>
+      <button id="confirmMeetingActionButton" class="primary" onclick="sendMeetingAction()">Продолжить</button>
+    </div>
   </div>
 </div>
 
@@ -272,6 +319,10 @@ let mailSelected = new Set();
 let vksSelected = new Set();
 let unsubscribeContacts = null;
 let unsubscribeHistory = null;
+let meetingActionMode = null;
+let meetingActionBusy = false;
+let vksSendBusy = false;
+let retryBusy = false;
 
 let calendarCursor = new Date();
 calendarCursor.setDate(1);
@@ -340,7 +391,7 @@ function openPage(name){
   document.getElementById("pageTitle").textContent = pageNames[name] || "";
   document.getElementById("sidebar").classList.remove("open");
   if(name==="mail") renderMailPicker();
-  if(name==="vks") renderVksPicker();
+  if(name==="vks"){ renderVksPicker(); renderVksMeetings(); }
   if(name==="contacts") renderContactsTable();
   if(name==="sent") renderSent();
   if(name==="history") renderHistory();
@@ -440,20 +491,26 @@ async function deleteContact(id){
 
 function startHistory(){
   if(unsubscribeHistory) unsubscribeHistory();
-  unsubscribeHistory = db.collection("history").orderBy("createdAt","desc").limit(100).onSnapshot(snap=>{
-    historyData=snap.docs.map(d=>({id:d.id,...d.data()})); updateDashboard(); renderSent(); renderHistory();
+  unsubscribeHistory = db.collection("history").orderBy("createdAt","desc").limit(500).onSnapshot(snap=>{
+    historyData=snap.docs.map(d=>({id:d.id,...d.data()})); updateDashboard(); renderSent(); renderHistory(); renderVksMeetings();
+    if(document.getElementById("meetingActionModal").classList.contains("show") && !meetingActionBusy) refreshMeetingActionOptions();
   },console.error);
 }
 function renderSent(){ const box=document.getElementById("sentList"); if(box) box.innerHTML=historyData.length?historyData.map(historyHtml).join(""):'<div class="muted">Отправлений пока нет.</div>'; }
 function renderHistory(){
   const box=document.getElementById("historyList"); if(!box) return;
   const filter=document.getElementById("historyFilter")?.value||"";
-  const list=historyData.filter(h=>!filter||h.type===filter);
+  const list=historyData.filter(h=>!filter||(filter==="vks"?h.type?.startsWith("vks"):h.type===filter));
   box.innerHTML=list.length?list.map(historyHtml).join(""):'<div class="muted">Записей пока нет.</div>';
 }
 function historyHtml(h){
   const date=h.createdAt?.toDate?h.createdAt.toDate().toLocaleString("ru-RU"):"";
-  return `<div class="history-item"><div class="history-type">${h.type==="vks"?"ВКС":"Письмо"}</div><div><div class="history-title">${escapeHtml(h.title||"Без темы")}</div><div class="history-meta">Получателей: ${h.recipientCount||0} · Успешно: ${h.successCount||0} · Ошибок: ${h.failureCount||0}</div>${h.type==="vks"&&h.meetingDate?`<div class="history-meta">Дата ВКС: ${escapeHtml(h.meetingDate)} ${escapeHtml(h.meetingTime||"")}</div>`:""}</div><div class="history-meta">${date}</div></div>`;
+  const types={vks:"Приглашение ВКС",vks_cancel:"Отмена ВКС",vks_reschedule:"Перенос ВКС",mail:"Письмо"};
+  const type=types[h.type]||"Событие";
+  const status=h.type==="vks"&&h.meetingStatus==="cancelled"?" · ВКС отменена":h.type==="vks"&&h.meetingStatus==="rescheduled"?" · ВКС перенесена":"";
+  const schedule=h.type==="vks"&&h.meetingDate?`<div class="history-meta">Дата ВКС: ${escapeHtml(formatRuDate(h.meetingDate))} ${escapeHtml(h.meetingTime||"")}${status}</div>`:"";
+  const changes=h.type==="vks_reschedule"?`<div class="history-meta">Было: ${escapeHtml(formatRuDate(h.oldMeetingDate))} ${escapeHtml(h.oldMeetingTime||"")} → Стало: ${escapeHtml(formatRuDate(h.newMeetingDate))} ${escapeHtml(h.newMeetingTime||"")}</div>`:"";
+  return `<div class="history-item"><div class="history-type">${type}</div><div><div class="history-title">${escapeHtml(h.title||"Без темы")}</div><div class="history-meta">Адресатов: ${h.recipientCount||0} · Успешно: ${h.successCount||0} · Ошибок: ${h.failureCount||0}</div>${schedule}${changes}</div><div class="history-meta">${date}</div></div>`;
 }
 
 function updateDashboard(){
@@ -462,9 +519,9 @@ function updateDashboard(){
   document.getElementById("metricEmails").textContent=mails.reduce((s,h)=>s+(h.successCount||0),0);
   document.getElementById("metricVks").textContent=vks.length;
   document.getElementById("metricAll").textContent=historyData.length;
-  const todayIso=new Date().toISOString().slice(0,10);
-  const upcoming=vks.filter(h=>h.meetingDate&&h.meetingDate>=todayIso).sort((a,b)=>(a.meetingDate+(a.meetingTime||"")).localeCompare(b.meetingDate+(b.meetingTime||"")))[0];
-  document.getElementById("upcomingVks").innerHTML=upcoming?`<strong>${escapeHtml(upcoming.title||"ВКС")}</strong><br>${formatRuDate(upcoming.meetingDate)} · ${escapeHtml(upcoming.meetingTime||"")}`:"Пока нет сохранённых предстоящих ВКС.";
+  const todayIso=localIsoDate(new Date());
+  const upcoming=vks.filter(h=>h.meetingStatus!=="cancelled"&&h.meetingDate&&h.meetingDate>=todayIso).sort((a,b)=>(a.meetingDate+(a.meetingTime||"")).localeCompare(b.meetingDate+(b.meetingTime||"")))[0];
+  document.getElementById("upcomingVks").innerHTML=upcoming?`<strong>${escapeHtml(upcoming.title||"ВКС")}</strong><br>${escapeHtml(formatRuDate(upcoming.meetingDate))} · ${escapeHtml(upcoming.meetingTime||"")}`:"Пока нет сохранённых предстоящих ВКС.";
 }
 
 async function saveDraft(){
@@ -500,24 +557,238 @@ async function sendFreeMail(){
   showStatus("freeStatus",`Отправка завершена. Успешно: <b>${ok}</b>. Ошибок: <b>${fail}</b>.`,fail?"error":"success",true);
 }
 
-async function sendVks(){
-  const title=document.getElementById("meetingName").value.trim(), date=document.getElementById("meetingDate").value, time=document.getElementById("meetingTime").value, link=document.getElementById("meetingLink").value.trim();
-  const recipients=contacts.filter(c=>vksSelected.has(c.id));
-  if(!title||!date||!time||!link){showStatus("vksStatus","Заполните название, дату, время и ссылку.","error");return;}
-  try{new URL(link);}catch{showStatus("vksStatus","Проверьте ссылку на ВКС.","error");return;}
-  if(!recipients.length){showStatus("vksStatus","Выберите хотя бы одного получателя.","error");return;}
-  if(!confirm(`Отправить приглашение на ВКС ${recipients.length} участникам?`))return;
+function normalizeRecipients(raw){
+  const map=new Map();
+  (Array.isArray(raw)?raw:[]).forEach(item=>{
+    const email=String(typeof item==="string"?item:item?.email||"").trim().toLowerCase();
+    if(!validEmail(email)) return;
+    const storedName=typeof item==="string"?"":String(item?.name||item?.fullName||"");
+    const contact=contacts.find(c=>(c.email||"").toLowerCase()===email);
+    const name=storedName||contact?.fullName||"";
+    const previous=map.get(email);
+    map.set(email,{email,name:previous?.name||name});
+  });
+  return [...map.values()];
+}
+function getInvitedRecipients(meeting){
+  // Новые рассылки: только те, кому EmailJS подтвердил отправку.
+  // Старые записи не содержат результатов по адресам: используем сохранённый список.
+  return normalizeRecipients(Array.isArray(meeting.deliveredRecipients)?meeting.deliveredRecipients:meeting.recipients);
+}
+function meetingList(){
+  return historyData.filter(h=>h.type==="vks").sort((a,b)=>{
+    const aCancelled=a.meetingStatus==="cancelled"?1:0, bCancelled=b.meetingStatus==="cancelled"?1:0;
+    if(aCancelled!==bCancelled)return aCancelled-bCancelled;
+    return (b.meetingDate||"").localeCompare(a.meetingDate||"");
+  });
+}
+function meetingLabel(m){
+  const status=m.meetingStatus||"scheduled";
+  const labels={scheduled:"Запланирована",cancelled:"Отменена",rescheduled:"Перенесена"};
+  return `<span class="meeting-label ${status}">${labels[status]||"Запланирована"}</span>`;
+}
+function lastMeetingEvent(id){
+  return historyData.find(h=>h.meetingId===id&&(h.type==="vks_cancel"||h.type==="vks_reschedule"));
+}
+function renderVksMeetings(){
+  const box=document.getElementById("vksMeetingsList"); if(!box)return;
+  const list=meetingList();
+  box.innerHTML=list.length?list.map(m=>{
+    const cancelled=m.meetingStatus==="cancelled";
+    const latest=lastMeetingEvent(m.id);
+    const retry=latest&&(latest.failureCount||0)>0;
+    return `<div class="meeting-entry"><div>
+      <strong>${escapeHtml(m.title||"ВКС")}${meetingLabel(m)}</strong>
+      <div class="muted" style="font-size:13px">${escapeHtml(formatRuDate(m.meetingDate))} · ${escapeHtml(m.meetingTime||"—")} · Приглашено: ${getInvitedRecipients(m).length}</div>
+      ${retry?`<div class="hint" style="color:#a25b00">Не все уведомления отправлены (${latest.failureCount} ошибок).</div>`:""}
+    </div><div class="meeting-actions">
+      ${retry?`<button class="secondary small" onclick="retryMeetingNotification('${latest.id}')" ${retryBusy?"disabled":""}>Повторить неотправленные</button>`:""}
+      <button class="ghost small" onclick="openMeetingActionModal('reschedule','${m.id}')" ${cancelled?"disabled":""}>Перенести</button>
+      <button class="danger small" onclick="openMeetingActionModal('cancel','${m.id}')" ${cancelled?"disabled":""}>Отменить</button>
+    </div></div>`;
+  }).join(""):'<div class="muted">Здесь появятся ВКС после отправки первых приглашений.</div>';
+}
 
-  const btn=document.getElementById("sendVksButton");btn.disabled=true;let ok=0,fail=0;
-  for(let i=0;i<recipients.length;i++){
-    const c=recipients[i];
-    showStatus("vksStatus",`Отправляем ${i+1} из ${recipients.length}<br><b>${escapeHtml(c.fullName||c.email)}</b>`,"info",true);
-    try{await emailjs.send(SERVICE_ID,VKS_TEMPLATE_ID,{to_email:c.email,participant_name:c.fullName||"",meeting_name:title,meeting_date:formatRuDate(date),meeting_time:time,meeting_link:link});ok++;}catch(e){console.error(e);fail++;}
-    if(i<recipients.length-1)await sleep(1200);
+async function sendVks(){
+  if(vksSendBusy)return;
+  const title=document.getElementById("meetingName").value.trim(), date=document.getElementById("meetingDate").value, time=document.getElementById("meetingTime").value, link=document.getElementById("meetingLink").value.trim();
+  if(!title||!date||!time||!link){showStatus("vksStatus","Заполните название, дату, время и ссылку.","error");return;}
+  if(!validMeetingLink(link)){showStatus("vksStatus","Укажите корректную ссылку http:// или https://.","error");return;}
+  const manual=parseEmails(document.getElementById("vksManualRecipients").value);
+  const invalid=manual.filter(e=>!validEmail(e));
+  if(invalid.length){showStatus("vksStatus","Проверьте адреса: "+invalid.join(", "),"error");return;}
+  const recipients=normalizeRecipients([
+    ...contacts.filter(c=>vksSelected.has(c.id)).map(c=>({email:c.email,name:c.fullName||""})),
+    ...manual.map(email=>({email,name:""}))
+  ]);
+  if(!recipients.length){showStatus("vksStatus","Выберите контакт или укажите хотя бы один адрес вручную.","error");return;}
+  if(!confirm(`Отправить приглашения на ВКС «${title}» по ${recipients.length} адресам?`))return;
+
+  const btn=document.getElementById("sendVksButton");vksSendBusy=true;btn.disabled=true;
+  const delivered=[],failed=[];
+  try{
+    for(let i=0;i<recipients.length;i++){
+      const c=recipients[i];
+      showStatus("vksStatus",`Отправляем ${i+1} из ${recipients.length}<br><b>${escapeHtml(c.name||c.email)}</b>`,"info",true);
+      try{await emailjs.send(SERVICE_ID,VKS_TEMPLATE_ID,{to_email:c.email,participant_name:c.name||"",meeting_name:title,meeting_date:formatRuDate(date),meeting_time:time,meeting_link:link});delivered.push(c);}catch(e){console.error(e);failed.push(c);}
+      if(i<recipients.length-1)await sleep(1200);
+    }
+    await db.collection("history").add({
+      type:"vks",title,meetingDate:date,meetingTime:time,meetingLink:link,meetingStatus:"scheduled",
+      recipientCount:recipients.length,successCount:delivered.length,failureCount:failed.length,
+      recipients:recipients.map(c=>c.email),deliveredRecipients:delivered,failedRecipients:failed,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showStatus("vksStatus",`Приглашения отправлены: <b>${delivered.length}</b>. Ошибок: <b>${failed.length}</b>. ВКС сохранена для отмены или переноса.`,failed.length?"error":"success",true);
+  }catch(e){console.error(e);showStatus("vksStatus","Отправка завершена, но не удалось сохранить историю. Проверьте доступ к Firestore и не отправляйте приглашения повторно без проверки.","error");}
+  finally{vksSendBusy=false;btn.disabled=false;}
+}
+
+function openMeetingActionModal(mode,meetingId){
+  if(meetingActionBusy)return;
+  meetingActionMode=mode;
+  const options=meetingList().filter(m=>m.meetingStatus!=="cancelled");
+  if(!options.length){alert("Нет ВКС, которые можно отменить или перенести. Сначала отправьте приглашение.");return;}
+  document.getElementById("meetingActionTitle").textContent=mode==="cancel"?"Отменить ВКС":"Перенести ВКС";
+  document.getElementById("meetingActionIntro").textContent="Уведомление будет отправлено по адресам исходного приглашения, включая адреса, введённые вручную.";
+  document.getElementById("rescheduleFields").classList.toggle("hidden",mode!=="reschedule");
+  const button=document.getElementById("confirmMeetingActionButton");
+  button.textContent=mode==="cancel"?"Отменить и уведомить":"Перенести и уведомить";
+  button.className=mode==="cancel"?"danger":"primary";
+  document.getElementById("meetingActionStatus").className="status";
+  document.getElementById("meetingActionModal").classList.add("show");
+  refreshMeetingActionOptions(meetingId);
+}
+function refreshMeetingActionOptions(preferredId){
+  const select=document.getElementById("meetingActionSelect");
+  const previous=preferredId||select.value;
+  const options=meetingList().filter(m=>m.meetingStatus!=="cancelled");
+  select.innerHTML=options.map(m=>`<option value="${m.id}">${escapeHtml(m.title||"ВКС")} — ${escapeHtml(formatRuDate(m.meetingDate))} ${escapeHtml(m.meetingTime||"")}</option>`).join("");
+  if(options.some(m=>m.id===previous))select.value=previous;
+  refreshMeetingActionForm();
+}
+function selectedMeeting(){
+  return historyData.find(h=>h.type==="vks"&&h.id===document.getElementById("meetingActionSelect").value);
+}
+function refreshMeetingActionForm(){
+  const m=selectedMeeting();
+  const info=document.getElementById("meetingActionInfo");
+  if(!m){info.textContent="Выберите ВКС.";document.getElementById("confirmMeetingActionButton").disabled=true;return;}
+  const recipients=getInvitedRecipients(m);
+  info.innerHTML=`<strong>${escapeHtml(m.title||"ВКС")}</strong><br>Текущая дата и время: ${escapeHtml(formatRuDate(m.meetingDate))}, ${escapeHtml(m.meetingTime||"—")}<br>Получателей уведомления: <strong>${recipients.length}</strong>${!Array.isArray(m.deliveredRecipients)?'<div class="warning-note">Это старая рассылка: в ней нет списка адресов, для которых EmailJS подтвердил отправку. Уведомление получат все адреса из исходной рассылки.</div>':""}`;
+  if(meetingActionMode==="reschedule"){
+    document.getElementById("newMeetingDate").value=m.meetingDate||"";
+    document.getElementById("newMeetingTime").value=m.meetingTime||"";
+    document.getElementById("newMeetingLink").value=m.meetingLink||"";
   }
-  btn.disabled=false;
-  await db.collection("history").add({type:"vks",title,meetingDate:date,meetingTime:time,meetingLink:link,recipientCount:recipients.length,successCount:ok,failureCount:fail,recipients:recipients.map(c=>c.email),createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-  showStatus("vksStatus",`Рассылка завершена. Успешно: <b>${ok}</b>. Ошибок: <b>${fail}</b>.`,fail?"error":"success",true);
+  document.getElementById("confirmMeetingActionButton").disabled=!recipients.length||meetingActionBusy;
+  updateMeetingNotificationPreview();
+}
+function notificationContent(m,mode,newDate,newTime,newLink){
+  const oldDate=formatRuDate(m.meetingDate), oldTime=m.meetingTime||"—";
+  if(mode==="cancel")return {
+    subject:`Отмена ВКС: ${m.title||"Заседание ДОС"}`,
+    message:`Уважаемые участники!\n\nСообщаем, что ВКС «${m.title||"Заседание ДОС"}», назначенная на ${oldDate} в ${oldTime}, ОТМЕНЕНА.\n\nПодключаться по ранее направленной ссылке не требуется.\n\nПриносим извинения за возможные неудобства.`
+  };
+  return {
+    subject:`Перенос ВКС: ${m.title||"Заседание ДОС"}`,
+    message:`Уважаемые участники!\n\nСообщаем, что ВКС «${m.title||"Заседание ДОС"}» ПЕРЕНЕСЕНА.\n\nРанее: ${oldDate} в ${oldTime}.\nНовая дата и время: ${formatRuDate(newDate)} в ${newTime||"—"}.\nНовая ссылка для подключения: ${newLink||"не указана"}.\n\nПросим учесть изменения при планировании участия.`
+  };
+}
+function updateMeetingNotificationPreview(){
+  const m=selectedMeeting();
+  const box=document.getElementById("meetingNotificationPreview");
+  if(!m){box.textContent="";return;}
+  const content=notificationContent(m,meetingActionMode,document.getElementById("newMeetingDate").value,document.getElementById("newMeetingTime").value,document.getElementById("newMeetingLink").value.trim());
+  box.textContent=content.subject+"\n\n"+content.message;
+}
+function closeMeetingActionModal(){
+  if(meetingActionBusy)return;
+  document.getElementById("meetingActionModal").classList.remove("show");
+}
+async function sendMeetingAction(){
+  if(meetingActionBusy)return;
+  const m=selectedMeeting();
+  if(!m||m.meetingStatus==="cancelled"){showStatus("meetingActionStatus","ВКС не найдена или уже отменена.","error");return;}
+  const recipients=getInvitedRecipients(m);
+  if(!recipients.length){showStatus("meetingActionStatus","Нет адресов, для которых EmailJS подтвердил отправку приглашения.","error");return;}
+  const mode=meetingActionMode;
+  const newDate=document.getElementById("newMeetingDate").value;
+  const newTime=document.getElementById("newMeetingTime").value;
+  const newLink=document.getElementById("newMeetingLink").value.trim();
+  if(mode==="reschedule"){
+    if(!newDate||!newTime||!validMeetingLink(newLink)){showStatus("meetingActionStatus","Укажите новую дату, время и корректную ссылку http(s).","error");return;}
+    if(newDate===m.meetingDate&&newTime===m.meetingTime&&newLink===m.meetingLink){showStatus("meetingActionStatus","Измените дату, время или ссылку — текущие данные совпадают с прежними.","error");return;}
+  }
+  const action=mode==="cancel"?"отменить":"перенести";
+  if(!confirm(`Вы действительно хотите ${action} ВКС «${m.title}» и отправить уведомление ${recipients.length} получателям?`))return;
+  const content=notificationContent(m,mode,newDate,newTime,newLink);
+  const btn=document.getElementById("confirmMeetingActionButton");
+  meetingActionBusy=true;btn.disabled=true;document.getElementById("closeMeetingActionButton").disabled=true;
+  const delivered=[],failed=[];
+  try{
+    for(let i=0;i<recipients.length;i++){
+      const r=recipients[i];
+      showStatus("meetingActionStatus",`Уведомляем ${i+1} из ${recipients.length}<br><b>${escapeHtml(r.email)}</b>`,"info",true);
+      try{
+        await emailjs.send(SERVICE_ID,FREE_MAIL_TEMPLATE_ID,{to_email:r.email,subject:content.subject,message:content.message,recipient_name:r.name||""});
+        delivered.push(r);
+      }catch(e){console.error(e);failed.push(r);}
+      if(i<recipients.length-1)await sleep(1200);
+    }
+    const eventRef=db.collection("history").doc();
+    const batch=db.batch();
+    const meetingUpdate={
+      meetingStatus:mode==="cancel"?"cancelled":"rescheduled",
+      lastActionAt:firebase.firestore.FieldValue.serverTimestamp(),
+      lastActionId:eventRef.id
+    };
+    if(mode==="reschedule"){
+      Object.assign(meetingUpdate,{meetingDate:newDate,meetingTime:newTime,meetingLink:newLink});
+    }
+    batch.update(db.collection("history").doc(m.id),meetingUpdate);
+    batch.set(eventRef,{
+      type:mode==="cancel"?"vks_cancel":"vks_reschedule",meetingId:m.id,title:m.title,
+      oldMeetingDate:m.meetingDate||"",oldMeetingTime:m.meetingTime||"",oldMeetingLink:m.meetingLink||"",
+      newMeetingDate:mode==="reschedule"?newDate:null,newMeetingTime:mode==="reschedule"?newTime:null,newMeetingLink:mode==="reschedule"?newLink:null,
+      subject:content.subject,message:content.message,
+      recipientCount:recipients.length,successCount:delivered.length,failureCount:failed.length,
+      recipients:recipients.map(r=>r.email),deliveredRecipients:delivered,failedRecipients:failed,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await batch.commit();
+    showStatus("meetingActionStatus",`ВКС ${mode==="cancel"?"отменена":"перенесена"}. Уведомлений отправлено: <b>${delivered.length}</b>. Ошибок: <b>${failed.length}</b>.${failed.length?" Неотправленные письма можно повторить в списке ВКС.":""}`,failed.length?"error":"success",true);
+  }catch(e){console.error(e);showStatus("meetingActionStatus","Уведомления были обработаны, но не удалось сохранить изменения в базе. Проверьте историю, прежде чем повторять рассылку.","error");}
+  finally{meetingActionBusy=false;btn.disabled=false;document.getElementById("closeMeetingActionButton").disabled=false;}
+}
+
+async function retryMeetingNotification(eventId){
+  if(retryBusy||meetingActionBusy)return;
+  const event=historyData.find(h=>h.id===eventId&&(h.type==="vks_cancel"||h.type==="vks_reschedule"));
+  if(!event)return;
+  const latest=lastMeetingEvent(event.meetingId);
+  if(!latest||latest.id!==event.id){alert("Можно повторить только последнее уведомление по этой ВКС.");return;}
+  const recipients=normalizeRecipients(event.failedRecipients);
+  if(!recipients.length){alert("Нет писем с ошибками отправки.");return;}
+  if(!confirm(`Повторить отправку ${recipients.length} неотправленных уведомлений по ВКС «${event.title}»?`))return;
+  retryBusy=true;renderVksMeetings();
+  const succeeded=[],failed=[];
+  try{
+    for(let i=0;i<recipients.length;i++){
+      const r=recipients[i];
+      showStatus("manageVksStatus",`Повторная отправка ${i+1} из ${recipients.length}: ${r.email}`,"info");
+      try{await emailjs.send(SERVICE_ID,FREE_MAIL_TEMPLATE_ID,{to_email:r.email,subject:event.subject,message:event.message,recipient_name:r.name||""});succeeded.push(r);}catch(e){console.error(e);failed.push(r);}
+      if(i<recipients.length-1)await sleep(1200);
+    }
+    await db.collection("history").doc(event.id).update({
+      successCount:(event.successCount||0)+succeeded.length,failureCount:failed.length,
+      deliveredRecipients:normalizeRecipients([...(event.deliveredRecipients||[]),...succeeded]),
+      failedRecipients:failed,
+      lastRetryAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showStatus("manageVksStatus",`Повторно отправлено: ${succeeded.length}. Осталось ошибок: ${failed.length}.`,failed.length?"error":"success");
+  }catch(e){console.error(e);showStatus("manageVksStatus","Не удалось сохранить результат повторной отправки. Проверьте историю.","error");}
+  finally{retryBusy=false;renderVksMeetings();}
 }
 
 function renderCalendar(){
@@ -539,12 +810,15 @@ function pickCalendarDate(iso){document.getElementById("meetingDate").value=iso;
 function syncCalendarFromInput(){const v=document.getElementById("meetingDate").value;if(v){const d=new Date(v+"T00:00:00");calendarCursor=new Date(d.getFullYear(),d.getMonth(),1);}renderCalendar();}
 
 function validEmail(email){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);}
-function parseEmails(text){return text.split(/[\n,;]+/).map(x=>x.trim().toLowerCase()).filter(Boolean);}
+function validMeetingLink(link){try{const url=new URL(link);return ["http:","https:"].includes(url.protocol)&&!!url.hostname;}catch{return false;}}
+function localIsoDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+function parseEmails(text){return text.split(/[\s,;]+/).map(x=>x.trim().toLowerCase()).filter(Boolean);}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 function formatRuDate(iso){if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}.${m}.${y}`;}
 function showStatus(id,msg,type,html=false){const el=document.getElementById(id);el.className=`status ${type}`;html?el.innerHTML=msg:el.textContent=msg;}
 function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
 document.getElementById("contactModal").addEventListener("click",e=>{if(e.target.id==="contactModal")closeContactModal();});
+document.getElementById("meetingActionModal").addEventListener("click",e=>{if(e.target.id==="meetingActionModal")closeMeetingActionModal();});
 </script>
 </body>
 </html>
